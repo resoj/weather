@@ -13,7 +13,11 @@ async function getCityWeatherData(cityName) {
     console.log(cityWeatherData.current.feelslike_f);
 }
 
-const cityName = document.getElementById('city-input');
+let cityName = null
+const getForecastButton = document.getElementById('get-forecast-button');
 
-
-getCityWeatherData('London');
+getForecastButton.addEventListener('click', () => {
+    const cityInput = document.getElementById('city-input');
+    cityName = cityInput.value
+    getCityWeatherData(cityName);
+});
