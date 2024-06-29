@@ -1,3 +1,5 @@
+import './style.css'
+
 async function getCityWeatherData(cityName) {
     const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=a390cc13883e4bfa92b23027242606&q=${cityName}`);
     const cityWeatherData = await response.json();
@@ -10,5 +12,8 @@ async function getCityWeatherData(cityName) {
     console.log(cityWeatherData.current.wind_mph);
     console.log(cityWeatherData.current.feelslike_f);
 }
+
+const cityName = document.getElementById('city-input');
+
 
 getCityWeatherData('London');

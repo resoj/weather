@@ -1,0 +1,42 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+#header-container {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    width: 1500px;
+    transform: translate(-50%, -50%);
+    display: grid;
+    justify-content: center;
+    border: 1px solid red;
+    gap: 10px;
+    font-size: 30px;
+}
+
+#city-input-container {
+    display: grid;
+    justify-content: center;
+}
+
+#city-input {
+    height: 50px;
+    width: 400px;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: lightgray;
+    grid-row: 2 / 3;
+    justify-self: end;
+    margin: 0px 5px;
+}
+
+#get-forecast-button {
+    height: 50px;
+    width: 100px;
+    grid-row: 2 / 3;
+    margin: 0px 5px;
+}
