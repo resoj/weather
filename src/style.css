@@ -3,20 +3,21 @@
     padding: 0px;
 }
 
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
 #header-container {
-    position: fixed;
-    top: 30%;
-    left: 50%;
-    width: 1500px;
-    transform: translate(-50%, -50%);
+    padding: 75px 0px;
     display: grid;
     justify-content: center;
-    border: 1px solid red;
+    /* border: 1px solid red; */
     gap: 10px;
     font-size: 30px;
 }
 
 #city-input-container {
+    margin-top: 25px;
     display: grid;
     justify-content: center;
 }
@@ -39,4 +40,75 @@
     width: 100px;
     grid-row: 2 / 3;
     margin: 0px 5px;
+}
+
+#container {
+    display: grid;
+    grid-template: 1fr / 1fr 2fr 1fr;
+}
+
+#weather-data-container {
+    display: grid;
+    grid-column: 2 / 3;
+    grid-template: 50px 50px 75px 150px 100px 1fr 1fr / 1fr;
+}
+
+#weather-data-container > *{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#country-city-name-container {
+    padding-bottom: 15px;
+    font-size: 40px;
+    grid-row: 1 / 2;
+    /* border: 1px solid red; */
+}
+
+#local-time-container {
+    height: 10px;
+    font-size: 20px;
+    padding-top: 10px;
+    grid-row: 2 / 3;
+    /* border: 1px solid red; */
+}
+
+#weather-condition-container {
+    font-size: 40px;
+    grid-row: 3 / 4;
+}
+
+#weather-condition-icon-temperature-container {
+    grid-row: 4 / 5;
+    padding-left: 125px;
+    padding-top: 75px;
+}
+
+#weather-condition-icon-img {
+    height: 250px;
+    width: 250px;
+}
+
+#current-temperature-container {
+    font-size: 60px;
+}
+
+#additional-weather-info-container {
+    padding-top: 40px;
+    display: grid;
+    grid-template: 1fr 1fr / 1fr;
+    grid-row: 5 / 6;
+    justify-items: center;
+}
+
+#feels-like-container {
+    font-size: 20px;
+    grid-row: 1 / 2;
+}
+
+#wind-direction-mph-container {
+    padding-top: 10px;
+    font-size: 20px;
+    grid-row: 2 / 3;
 }
