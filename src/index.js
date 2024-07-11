@@ -1,7 +1,7 @@
 import './style.css'
 
 async function getCityWeatherData(cityName) {
-    const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=a390cc13883e4bfa92b23027242606&q=${cityName}&days=0`);
+    const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=a390cc13883e4bfa92b23027242606&q=${cityName}&days=3`);
     const cityWeatherData = await response.json();
     setCityWeatherData(cityWeatherData);
     console.log(cityWeatherData.location.country);
@@ -50,6 +50,27 @@ function setCityWeatherData(cityWeatherData) {
 
     const forecastContainer = document.getElementById('forecast-container');
 
+    const sunrise = document.getElementById('sunrise');
+    const sunset = document.getElementById('sundown');
+    const chanceOfRain = document.getElementById('chance-of-rain');
+    const humidity = document.getElementById('humidity');
+    const uv = document.getElementById('uv-index');
+    const wind = document.getElementById('wind');
+    const visibility = document.getElementById('visibility');
+    const precipitation = document.getElementById('precipitation');
+    const moonPhase = document.getElementById('moon-phase');
+
+
+    sunrise.textContent = cityWeatherData.forecast.forecastday[0].astro.sunrise;
+    sunset.textContent = cityWeatherData.forecast.forecastday[0].astro.sunset;
+    chanceOfRain.textContent = `${cityWeatherData.forecast.forecastday[0].hour[0].chance_of_rain}%`;
+    humidity.textContent = cityWeatherData.forecast.forecastday[0].hour[0].humidity;
+    uv.textContent = cityWeatherData.current.uv;
+    wind.textContent = `${cityWeatherData.current.wind_dir} ${cityWeatherData.current.wind_mph}`;
+    visibility.textContent = cityWeatherData.forecast.forecastday[0].day.avgvis_miles;
+    precipitation.textContent = cityWeatherData.forecast.forecastday[0].day.totalprecip_in;
+    moonPhase.textContent = cityWeatherData.forecast.forecastday[0].astro.moon_phase;
+
     cityWeatherData.forecast.forecastday.forEach(day => {
         day.hour.forEach(hour => {
             const rainChance = hour.chance_of_rain;
@@ -86,6 +107,65 @@ function setCityWeatherData(cityWeatherData) {
             console.log(temp_f);
         })
     })
+
+    const options = { weekday: 'long', month: 'long', day: 'numeric' };
+
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+    }
+
+    const dayZero = document.getElementById('day-0');
+    const dayOne = document.getElementById('day-1');
+    const dayTwo = document.getElementById('day-2');
+
+    const imgZero = document.createElement('img');
+    // imgZero.src = 
+    const weekdayZero = document.createElement('div');
+    weekdayZero.textContent = 'Today';
+    dayZero.appendChild(weekdayZero);
+    const dayZeroRainChance = document.createElement('div');
+    dayZeroRainChance.textContent = `${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}%`;
+    dayZero.appendChild(dayZeroRainChance);
+    const dayZeroHigh = document.createElement('div');
+    dayZeroHigh.textContent = cityWeatherData.forecast.forecastday[0].day.maxtemp_f;
+    dayZero.appendChild(dayZeroHigh);
+    const dayZeroLow = document.createElement('div');
+    dayZeroLow.textContent = cityWeatherData.forecast.forecastday[0].day.mintemp_f;
+    dayZero.appendChild(dayZeroLow);
+    
+    const imgOne = document.createElement('img');
+    // imgOne.src = 
+    const weekdayOne = document.createElement('div');
+    weekdayOne.textContent = `${formatDate(cityWeatherData.forecast.forecastday[1].date)}`;
+    dayOne.appendChild(weekdayOne);
+    const dayOneRainChance = document.createElement('div');
+    dayOneRainChance.textContent = `${cityWeatherData.forecast.forecastday[1].day.daily_chance_of_rain}%`;
+    dayOne.appendChild(dayOneRainChance);
+    const dayOneHigh = document.createElement('div');
+    dayOneHigh.textContent = cityWeatherData.forecast.forecastday[1].day.maxtemp_f;
+    dayOne.appendChild(dayOneHigh);
+    const dayOneLow = document.createElement('div');
+    dayOneLow.textContent = cityWeatherData.forecast.forecastday[1].day.mintemp_f;
+    dayOne.appendChild(dayOneLow);
+
+    const imgTwo = document.createElement('img');
+    // imgTwo.src = 
+    const weekdayTwo = document.createElement('div');
+    weekdayTwo.textContent = formatDate(cityWeatherData.forecast.forecastday[2].date);
+    dayTwo.appendChild(weekdayTwo);
+    const dayTwoRainChance = document.createElement('div');
+    dayTwoRainChance.textContent = `${cityWeatherData.forecast.forecastday[2].day.daily_chance_of_rain}%`;
+    dayTwo.appendChild(dayTwoRainChance);
+    const dayTwoHigh = document.createElement('div');
+    dayTwoHigh.textContent = cityWeatherData.forecast.forecastday[2].day.maxtemp_f;
+    dayTwo.appendChild(dayTwoHigh);
+    const dayTwoLow = document.createElement('div');
+    dayTwoLow.textContent = cityWeatherData.forecast.forecastday[2].day.mintemp_f;
+    dayTwo.appendChild(dayTwoLow);
+
+    // dayOne.textContent = formatDate(cityWeatherData.forecast.forecastday[1].date)
+    // dayTwo.textContent = formatDate(cityWeatherData.forecast.forecastday[2].date)
 }
 
 let cityName = null
