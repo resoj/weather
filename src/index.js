@@ -50,26 +50,51 @@ function setCityWeatherData(cityWeatherData) {
 
     const forecastContainer = document.getElementById('forecast-container');
 
-    const sunrise = document.getElementById('sunrise');
-    const sunset = document.getElementById('sundown');
-    const chanceOfRain = document.getElementById('chance-of-rain');
-    const humidity = document.getElementById('humidity');
-    const uv = document.getElementById('uv-index');
-    const wind = document.getElementById('wind');
-    const visibility = document.getElementById('visibility');
-    const precipitation = document.getElementById('precipitation');
-    const moonPhase = document.getElementById('moon-phase');
+    const sunriseContainer = document.getElementById('sunrise');
+    const sunsetContainer = document.getElementById('sundown');
+    const chanceOfRainContainer = document.getElementById('chance-of-rain');
+    const humidityContainer = document.getElementById('humidity');
+    const uvContainer = document.getElementById('uv-index');
+    const windContainer = document.getElementById('wind');
+    const visibilityContainer = document.getElementById('visibility');
+    const precipitationContainer = document.getElementById('precipitation');
+    const moonPhaseContainer = document.getElementById('moon-phase');
 
+    const sunriseText = document.createElement('p');
+    sunriseText.textContent = cityWeatherData.forecast.forecastday[0].astro.sunrise;
+    sunriseContainer.appendChild(sunriseText);
 
-    sunrise.textContent = cityWeatherData.forecast.forecastday[0].astro.sunrise;
-    sunset.textContent = cityWeatherData.forecast.forecastday[0].astro.sunset;
-    chanceOfRain.textContent = `${cityWeatherData.forecast.forecastday[0].hour[0].chance_of_rain}%`;
-    humidity.textContent = cityWeatherData.forecast.forecastday[0].hour[0].humidity;
-    uv.textContent = cityWeatherData.current.uv;
-    wind.textContent = `${cityWeatherData.current.wind_dir} ${cityWeatherData.current.wind_mph}`;
-    visibility.textContent = cityWeatherData.forecast.forecastday[0].day.avgvis_miles;
-    precipitation.textContent = cityWeatherData.forecast.forecastday[0].day.totalprecip_in;
-    moonPhase.textContent = cityWeatherData.forecast.forecastday[0].astro.moon_phase;
+    const sunsetText = document.createElement('p');
+    sunsetText.textContent = cityWeatherData.forecast.forecastday[0].astro.sunset;
+    sunsetContainer.appendChild(sunsetText);
+
+    const chanceOfRainText = document.createElement('p');
+    chanceOfRainText.textContent = `${cityWeatherData.forecast.forecastday[0].hour[0].chance_of_rain}%`; 
+    chanceOfRainContainer.appendChild(chanceOfRainText);
+
+    const humidityText = document.createElement('p');
+    humidityText.textContent = cityWeatherData.forecast.forecastday[0].hour[0].humidity;
+    humidityContainer.appendChild(humidityText);
+
+    const uvText = document.createElement('p');
+    uvText.textContent = cityWeatherData.current.uv;
+    uvContainer.appendChild(uvText);
+
+    const windText = document.createElement('p');
+    windText.textContent = `${cityWeatherData.current.wind_dir} ${cityWeatherData.current.wind_mph}`;
+    windContainer.appendChild(windText);
+
+    const visibilityText = document.createElement('p');
+    visibilityText.textContent = cityWeatherData.forecast.forecastday[0].day.avgvis_miles;
+    visibilityContainer.appendChild(visibilityText);
+
+    const precipitationText = document.createElement('p');
+    precipitationText.textContent = cityWeatherData.forecast.forecastday[0].day.totalprecip_in;
+    precipitationContainer.appendChild(precipitationText);
+
+    const moonPhaseText = document.createElement('p');
+    moonPhaseText.textContent = cityWeatherData.forecast.forecastday[0].astro.moon_phase;
+    moonPhaseContainer.appendChild(moonPhaseText);
 
     cityWeatherData.forecast.forecastday.forEach(day => {
         day.hour.forEach(hour => {

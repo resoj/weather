@@ -165,17 +165,12 @@ body {
 
 #secondary-weather-data-container > * {
     display: grid;
-    grid-template: 1fr 1fr / 1fr;
+    grid-template: 2fr 1fr / 1fr;
     justify-items: center;
     border: 1px solid red;
     border-radius: 10px;
     height: 100px;
     width: 130px;
-}
-
-#sunrise {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
 }
 
 .hour-container {
