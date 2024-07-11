@@ -133,7 +133,7 @@ function setCityWeatherData(cityWeatherData) {
         })
     })
 
-    const options = { weekday: 'long', month: 'long', day: 'numeric' };
+    const options = { weekday: 'long'};
 
     function formatDate(dateStr) {
         const date = new Date(dateStr);
@@ -145,7 +145,8 @@ function setCityWeatherData(cityWeatherData) {
     const dayTwo = document.getElementById('day-2');
 
     const imgZero = document.createElement('img');
-    // imgZero.src = 
+    imgZero.src = cityWeatherData.current.condition.icon;
+    dayZero.appendChild(imgZero);
     const weekdayZero = document.createElement('div');
     weekdayZero.textContent = 'Today';
     dayZero.appendChild(weekdayZero);
@@ -160,7 +161,8 @@ function setCityWeatherData(cityWeatherData) {
     dayZero.appendChild(dayZeroLow);
     
     const imgOne = document.createElement('img');
-    // imgOne.src = 
+    imgOne.src = cityWeatherData.forecast.forecastday[1].day.condition.icon;
+    dayOne.appendChild(imgOne);
     const weekdayOne = document.createElement('div');
     weekdayOne.textContent = `${formatDate(cityWeatherData.forecast.forecastday[1].date)}`;
     dayOne.appendChild(weekdayOne);
@@ -175,7 +177,8 @@ function setCityWeatherData(cityWeatherData) {
     dayOne.appendChild(dayOneLow);
 
     const imgTwo = document.createElement('img');
-    // imgTwo.src = 
+    imgTwo.src = cityWeatherData.forecast.forecastday[2].day.condition.icon;
+    dayTwo.appendChild(imgTwo);
     const weekdayTwo = document.createElement('div');
     weekdayTwo.textContent = formatDate(cityWeatherData.forecast.forecastday[2].date);
     dayTwo.appendChild(weekdayTwo);

@@ -64,7 +64,7 @@ body {
 #weekly-forecast-container > * {
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 1fr / 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr / 1fr 1fr 1fr 1fr 1fr;
     align-items: center;
     border: 1px solid red;
     border-radius: 10px;
