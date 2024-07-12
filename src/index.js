@@ -44,7 +44,7 @@ function setCityWeatherData(cityWeatherData) {
     currentTemperature.textContent = `${cityWeatherData.current.temp_f}\u00B0F`;
     localTime.textContent = cityWeatherData.location.localtime;
     weatherCondition.textContent = cityWeatherData.current.condition.text;
-    weatherConditionIcon.src = cityWeatherData.current.condition.icon;
+    weatherConditionIcon.src = exchangeIconImage(weatherCondition.textContent); //cityWeatherData.current.condition.icon;
     windDirectionMPH.textContent = `with wind speeds at ${cityWeatherData.current.wind_mph} MPH in the direction: ${cityWeatherData.current.wind_dir}`;
     feelsLike.textContent = `Feels like ${cityWeatherData.current.feelslike_f}\u00B0F`;
 
@@ -100,6 +100,7 @@ function setCityWeatherData(cityWeatherData) {
         day.hour.forEach(hour => {
             const rainChance = hour.chance_of_rain;
             const icon = hour.condition.icon;
+            const iconText = hour.condition.text;
             const conditionText = hour.condition.text;
             const temp_f = hour.temp_f;
             const time = hour.time;
@@ -118,7 +119,7 @@ function setCityWeatherData(cityWeatherData) {
             hourContainer.appendChild(rainChanceContainer);
 
             const iconContainer = document.createElement('img');
-            iconContainer.src = icon;
+            iconContainer.src = exchangeIconImage(iconText);
             hourContainer.appendChild(iconContainer);
 
             const tempContainer = document.createElement('div');
@@ -145,7 +146,7 @@ function setCityWeatherData(cityWeatherData) {
     const dayTwo = document.getElementById('day-2');
 
     const imgZero = document.createElement('img');
-    imgZero.src = cityWeatherData.current.condition.icon;
+    imgZero.src = exchangeIconImage(cityWeatherData.current.condition.text);
     dayZero.appendChild(imgZero);
     const weekdayZero = document.createElement('div');
     weekdayZero.textContent = 'Today';
@@ -154,14 +155,14 @@ function setCityWeatherData(cityWeatherData) {
     dayZeroRainChance.textContent = `${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}%`;
     dayZero.appendChild(dayZeroRainChance);
     const dayZeroHigh = document.createElement('div');
-    dayZeroHigh.textContent = cityWeatherData.forecast.forecastday[0].day.maxtemp_f;
+    dayZeroHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[0].day.maxtemp_f}\u00B0F`;
     dayZero.appendChild(dayZeroHigh);
     const dayZeroLow = document.createElement('div');
-    dayZeroLow.textContent = cityWeatherData.forecast.forecastday[0].day.mintemp_f;
+    dayZeroLow.textContent = `L: ${cityWeatherData.forecast.forecastday[0].day.mintemp_f}\u00B0F`;
     dayZero.appendChild(dayZeroLow);
     
     const imgOne = document.createElement('img');
-    imgOne.src = cityWeatherData.forecast.forecastday[1].day.condition.icon;
+    imgOne.src = exchangeIconImage(cityWeatherData.forecast.forecastday[1].day.condition.text);
     dayOne.appendChild(imgOne);
     const weekdayOne = document.createElement('div');
     weekdayOne.textContent = `${formatDate(cityWeatherData.forecast.forecastday[1].date)}`;
@@ -170,14 +171,14 @@ function setCityWeatherData(cityWeatherData) {
     dayOneRainChance.textContent = `${cityWeatherData.forecast.forecastday[1].day.daily_chance_of_rain}%`;
     dayOne.appendChild(dayOneRainChance);
     const dayOneHigh = document.createElement('div');
-    dayOneHigh.textContent = cityWeatherData.forecast.forecastday[1].day.maxtemp_f;
+    dayOneHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[1].day.maxtemp_f}\u00B0F`;
     dayOne.appendChild(dayOneHigh);
     const dayOneLow = document.createElement('div');
-    dayOneLow.textContent = cityWeatherData.forecast.forecastday[1].day.mintemp_f;
+    dayOneLow.textContent = `L:${cityWeatherData.forecast.forecastday[1].day.mintemp_f}\u00B0F`;
     dayOne.appendChild(dayOneLow);
 
     const imgTwo = document.createElement('img');
-    imgTwo.src = cityWeatherData.forecast.forecastday[2].day.condition.icon;
+    imgTwo.src = exchangeIconImage(cityWeatherData.forecast.forecastday[2].day.condition.text);
     dayTwo.appendChild(imgTwo);
     const weekdayTwo = document.createElement('div');
     weekdayTwo.textContent = formatDate(cityWeatherData.forecast.forecastday[2].date);
@@ -186,14 +187,118 @@ function setCityWeatherData(cityWeatherData) {
     dayTwoRainChance.textContent = `${cityWeatherData.forecast.forecastday[2].day.daily_chance_of_rain}%`;
     dayTwo.appendChild(dayTwoRainChance);
     const dayTwoHigh = document.createElement('div');
-    dayTwoHigh.textContent = cityWeatherData.forecast.forecastday[2].day.maxtemp_f;
+    dayTwoHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[2].day.maxtemp_f}\u00B0F`;
     dayTwo.appendChild(dayTwoHigh);
     const dayTwoLow = document.createElement('div');
-    dayTwoLow.textContent = cityWeatherData.forecast.forecastday[2].day.mintemp_f;
+    dayTwoLow.textContent = `L: ${cityWeatherData.forecast.forecastday[2].day.mintemp_f}\u00B0F`;
     dayTwo.appendChild(dayTwoLow);
+}
 
-    // dayOne.textContent = formatDate(cityWeatherData.forecast.forecastday[1].date)
-    // dayTwo.textContent = formatDate(cityWeatherData.forecast.forecastday[2].date)
+function exchangeIconImage(iconConditionText) {
+    switch(iconConditionText) {
+        case "Sunny":
+            return "./images/wi-day-sunny.svg";
+        case "Clear":
+            return "./images/wi-day-sunny.svg";
+        case "Clear ":
+            return "./images/wi-day-sunny.svg";
+        case "Partly cloudy":
+            return "./images/wi-cloudy.svg"
+        case "Partly Cloudy ":
+            return "./images/wi-cloudy.svg"
+        case "Cloudy":
+            return "./images/wi-cloudy.svg"
+        
+        case "Overcast":
+
+        case "Mist":
+            return "./images/wi-fog.svg"
+        case "Patchy rain possible":
+            return "./images/wi-day-rain.svg"
+        case "Patchy snow possible":
+            return "./images/wi-day-snow-wind.svg"
+        case "Patchy sleet possible":
+            return "./images/wi-day-rain-mix.svg"
+        case "Patchy freezing drizzle possible":
+            return "./images/wi-day-rain-mix.svg"
+        case "Thundery outbreaks possible":
+            return "./images/wi-day-lightning.svg"
+        case "Blowing snow":
+            return "./images/wi-day-snow.svg"
+        case "Blizzard": 
+            return "./images/wi-tornado.svg"
+        case "Fog":
+            return "./images/wi-fog.svg"
+        case "Freezing fog":
+            return "./images/wi-fog.svg"
+        case "Patchy light drizzle":
+            return "./images/wi-day-rain.svg"
+        case "Light drizzle":
+            return "./images/wi-day-rain.svg"
+        case "Freezing drizzle":
+            return "./images/wi-day-rain-mix.svg"
+        case "Heavy freezing drizzle":
+            return "./images/wi-day-rain-mix.svg"
+        case "Patchy light rain":
+            return "./images/wi-day-rain.svg"
+        case "Light rain":
+            return "./images/wi-day-rain.svg"
+        case "Moderate rain at times":
+            return "./images/wi-day-rain.svg"
+        case "Moderate rain":
+            return "./images/wi-day-rain.svg"
+        case "Heavy rain at times":
+            return "./images/wi-day-rain.svg"
+        case "Heavy rain":
+            return "./images/wi-day-rain.svg"
+        case "Light freezing rain":
+            return "./images/wi-day-rain-mix.svg"
+        case "Moderate or heavy freezing rain":
+            return "./images/wi-day-rain-mix.svg"
+        case "Light sleet":
+            return "./images/wi-day-rain-mix.svg"
+        case "Moderate or heavy sleet":
+            return "./images/wi-day-rain-mix.svg"
+        case "Patchy light snow":
+            return "./images/wi-day-snow.svg"
+        case "Light snow":
+            return "./images/wi-day-snow.svg"
+        case "Patchy moderate snow":
+            return "./images/wi-day-snow.svg"
+        case "Moderate snow":
+            return "./images/wi-day-snow.svg"
+        case "Patchy heavy snow":
+            return "./images/wi-day-snow.svg"
+        case "Heavy snow":
+            return "./images/wi-day-snow.svg"
+        case "Ice pellets":
+
+        case "Light rain shower":
+
+        case "Moderate or heavy rain shower":
+            return "./images/wi-day-rain.svg"
+        case "Torrential rain shower":
+            return "./images/wi-day-rain.svg"
+        case "Light sleet showers":
+            return "./images/wi-day-rain-mix.svg"
+        case "Moderate or heavy sleet showers":
+            return "./images/wi-day-rain-mix.svg"
+        case "Light snow showers":
+            return "./images/wi-day-snow.svg"
+        case "Moderate or heavy snow showers":
+            return "./images/wi-day-snow.svg"
+        case "Light showers of ice pellets":
+
+        case "Patchy light rain with thunder":
+            
+        case "Moderate or heavy rain with thunder":
+
+        case "Patchy light snow with thunder":
+
+        case "Moderate or heavy snow with thunder":
+
+
+    }
 }
 
 let cityName = null
