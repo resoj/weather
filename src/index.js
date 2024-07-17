@@ -41,12 +41,12 @@ function setCityWeatherData(cityWeatherData) {
     const feelsLike = document.getElementById('feels-like-container');
 
     countryCityName.textContent = `${cityWeatherData.location.name}, ${cityWeatherData.location.country}`;
-    currentTemperature.textContent = `${cityWeatherData.current.temp_f}\u00B0F`;
-    localTime.textContent = cityWeatherData.location.localtime;
+    currentTemperature.textContent = `${cityWeatherData.current.temp_f}\u00B0`;
+    
+    localTime.textContent = cityWeatherData.location.localtime.slice(-5);
     weatherCondition.textContent = cityWeatherData.current.condition.text;
     weatherConditionIcon.src = exchangeIconImage(weatherCondition.textContent); //cityWeatherData.current.condition.icon;
-    windDirectionMPH.textContent = `with wind speeds at ${cityWeatherData.current.wind_mph} MPH in the direction: ${cityWeatherData.current.wind_dir}`;
-    feelsLike.textContent = `Feels like ${cityWeatherData.current.feelslike_f}\u00B0F`;
+    feelsLike.textContent = `Feels like ${cityWeatherData.current.feelslike_f}\u00B0`;
 
     const forecastContainer = document.getElementById('forecast-container');
 
@@ -111,19 +111,21 @@ function setCityWeatherData(cityWeatherData) {
             
             const timeContainer = document.createElement('div');
             timeContainer.classList.add('time-container');
-            timeContainer.textContent = time.substring(10,13);
+            timeContainer.textContent = time.substring(10);
             hourContainer.appendChild(timeContainer);
 
             const rainChanceContainer = document.createElement('div');
             rainChanceContainer.textContent = `${rainChance}%`;
+            rainChanceContainer.style.color = 'blue';
             hourContainer.appendChild(rainChanceContainer);
 
             const iconContainer = document.createElement('img');
+            iconContainer.classList.add('icon-container');
             iconContainer.src = exchangeIconImage(iconText);
             hourContainer.appendChild(iconContainer);
 
             const tempContainer = document.createElement('div');
-            tempContainer.textContent = `${temp_f}\u00B0F`;
+            tempContainer.textContent = `${temp_f}\u00B0`;
             hourContainer.appendChild(tempContainer);
 
             console.log(time);
@@ -155,10 +157,10 @@ function setCityWeatherData(cityWeatherData) {
     dayZeroRainChance.textContent = `${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}%`;
     dayZero.appendChild(dayZeroRainChance);
     const dayZeroHigh = document.createElement('div');
-    dayZeroHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[0].day.maxtemp_f}\u00B0F`;
+    dayZeroHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[0].day.maxtemp_f}\u00B0`;
     dayZero.appendChild(dayZeroHigh);
     const dayZeroLow = document.createElement('div');
-    dayZeroLow.textContent = `L: ${cityWeatherData.forecast.forecastday[0].day.mintemp_f}\u00B0F`;
+    dayZeroLow.textContent = `L: ${cityWeatherData.forecast.forecastday[0].day.mintemp_f}\u00B0`;
     dayZero.appendChild(dayZeroLow);
     
     const imgOne = document.createElement('img');
@@ -171,10 +173,10 @@ function setCityWeatherData(cityWeatherData) {
     dayOneRainChance.textContent = `${cityWeatherData.forecast.forecastday[1].day.daily_chance_of_rain}%`;
     dayOne.appendChild(dayOneRainChance);
     const dayOneHigh = document.createElement('div');
-    dayOneHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[1].day.maxtemp_f}\u00B0F`;
+    dayOneHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[1].day.maxtemp_f}\u00B0`;
     dayOne.appendChild(dayOneHigh);
     const dayOneLow = document.createElement('div');
-    dayOneLow.textContent = `L:${cityWeatherData.forecast.forecastday[1].day.mintemp_f}\u00B0F`;
+    dayOneLow.textContent = `L: ${cityWeatherData.forecast.forecastday[1].day.mintemp_f}\u00B0`;
     dayOne.appendChild(dayOneLow);
 
     const imgTwo = document.createElement('img');
@@ -187,10 +189,10 @@ function setCityWeatherData(cityWeatherData) {
     dayTwoRainChance.textContent = `${cityWeatherData.forecast.forecastday[2].day.daily_chance_of_rain}%`;
     dayTwo.appendChild(dayTwoRainChance);
     const dayTwoHigh = document.createElement('div');
-    dayTwoHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[2].day.maxtemp_f}\u00B0F`;
+    dayTwoHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[2].day.maxtemp_f}\u00B0`;
     dayTwo.appendChild(dayTwoHigh);
     const dayTwoLow = document.createElement('div');
-    dayTwoLow.textContent = `L: ${cityWeatherData.forecast.forecastday[2].day.mintemp_f}\u00B0F`;
+    dayTwoLow.textContent = `L: ${cityWeatherData.forecast.forecastday[2].day.mintemp_f}\u00B0`;
     dayTwo.appendChild(dayTwoLow);
 }
 
@@ -290,16 +292,16 @@ function exchangeIconImage(iconConditionText) {
         case "Light showers of ice pellets":
 
         case "Patchy light rain with thunder":
-            
+            return "./images/wi-day-rain-mix.svg"
         case "Moderate or heavy rain with thunder":
 
         case "Patchy light snow with thunder":
 
         case "Moderate or heavy snow with thunder":
 
-
+        default:
     }
-}
+};
 
 let cityName = null
 const getForecastButton = document.getElementById('get-forecast-button');

@@ -7,13 +7,15 @@
 </head>
 <body>
     <div id="header-container">
-        <h1>What's the weather like today?</h1>
+        <p id="title">weatherNow</p>
         <div id="city-input-container">
             <input id="city-input" placeholder="Enter a City Name">
             <button id="get-forecast-button">Get Forecast</button>
         </div>
+        <button id="temperature-type-change-button">C&deg / F&deg</button>
     </div>
     <div id="container">
+        <div class="category">The next 3 days</div>
         <div id="weekly-forecast-container">
             <div id="day-0"></div>
             <div id="day-1"></div>
@@ -27,13 +29,10 @@
                 <img id="weather-condition-icon-img">
                 <div id="current-temperature-container"></div>
             </div>
-            <div id="additional-weather-info-container">
-                <div id="feels-like-container"></div>
-                <div id="wind-direction-mph-container"></div>
-                <div id="forecast-container"></div>
-            </div>
+            <div id="feels-like-container"></div>
         </div>
         <div id="secondary-weather-data-container">
+            <div class="category">More on today</div>
             <div id="sunrise">Sunrise
                 <img src="./images/wi-sunrise.svg" height="75" width="75">
             </div>
@@ -59,6 +58,9 @@
                 <img src="./images/wi-raindrops.svg" height="75" width="75">
             </div>
             <div id="moon-phase">Moon Phase</div>
+        </div>
+        <div class="category">Hourly forecast</div>
+        <div id="forecast-container">
         </div>
     </div>
 </body>
