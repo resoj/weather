@@ -93,7 +93,12 @@ function setCityWeatherData(cityWeatherData) {
     precipitationContainer.appendChild(precipitationText);
 
     const moonPhaseText = document.createElement('p');
+    const moonPhaseIcon = document.createElement('img');
     moonPhaseText.textContent = cityWeatherData.forecast.forecastday[0].astro.moon_phase;
+    moonPhaseIcon.style.height = '75px';
+    moonPhaseIcon.style.width = '75px';
+    moonPhaseIcon.src = moonPhase(moonPhaseText.textContent);
+    moonPhaseContainer.appendChild(moonPhaseIcon);
     moonPhaseContainer.appendChild(moonPhaseText);
 
     cityWeatherData.forecast.forecastday.forEach(day => {
@@ -300,6 +305,27 @@ function exchangeIconImage(iconConditionText) {
         case "Moderate or heavy snow with thunder":
 
         default:
+    }
+};
+
+function moonPhase(moonPhaseText) {
+    switch(moonPhaseText) {
+        case "New Moon":
+            return './images/wi-moon-new.svg';
+        case "Waxing Crescent":
+            return './images/wi-moon-waxing-crescent-1.svg';
+        case "First Quarter":
+            return './images/wi-moon-first-quarter.svg';
+        case "Waxing Gibbous":
+            return './images/wi-moon-waxing-gibbous-1.svg';
+        case "Full Moon":
+            return './images/wi-moon-full.svg';
+        case "Waning Gibbous":
+            return './images/wi-moon-waning-gibbous-1.svg';
+        case "Last Quarter":
+            return './images/wi-moon-third-quarter.svg';
+        case "Waning Crescent":
+            return './images/wi-moon-waning-crescent-1.svg';
     }
 };
 
