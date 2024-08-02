@@ -1,8 +1,10 @@
 :root {
-    --primary-color: #80ffdb;
-    --secondary-color: #55e0a3;
-    --background-color: #5b70f3;
-    --darker-backround-color: #4850b9;
+    --text-color: #f4f3ee;
+    --primary-color: #BFD7EA;
+    --secondary-color: #D62839;
+    --darker-secondary-color: #BA324F;
+    --background-color: #0B3954;
+    --darker-background-color: #003049;
 }
 
 * {
@@ -11,6 +13,7 @@
 }
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: var(--background-color)
 }
 
 #header-container {
@@ -18,9 +21,11 @@ body {
     display: grid;
     grid-template: 1fr / 500px 500px 1fr;
     justify-items: center;
-    /* border: 1px solid red; */
     gap: 10px;
     font-size: 30px;
+    background-color: var(--secondary-color);
+    border-bottom: 1px solid var(--darker-secondary-color);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 #title {
@@ -55,6 +60,7 @@ body {
 }
 
 #temperature-type-change-button {
+    font-size: 16px;
     grid-column: 3 / 4;
     width: 175px;
     justify-self: end;
@@ -64,28 +70,19 @@ body {
 #container {
     display: grid;
     grid-template: 1fr / 1fr 1fr 1fr;
+    column-gap: 25px;
+    row-gap: 10px;
 }
 
 #weekly-forecast-container {
     display: grid;
     justify-items: center;
-    grid-template: 1fr 1fr 1fr / 1fr;
+    grid-template: 50px 1fr 1fr 1fr / 1fr;
     grid-column: 1 / 2;
     gap: 10px;
     /* border: 1px solid red; */
-}
-
-.category {
-    border-bottom: 1px solid black;
-    margin-left: 2vw;
-    height: fit-content;
-    font-size: 25px;
-    justify-self: start;
-    width: inherit;
-}
-
-#weekly-forecast-container .category {
-    grid-row: 1 / 2;
+    background-color: var(--primary-color);
+    border-radius: 10px;
 }
 
 #weekly-forecast-container > * {
@@ -99,10 +96,19 @@ body {
     width: 500px;
 }
 
+#weekly-forecast-container > .category {
+    grid-row: 1 / 2;
+    border-radius: 0px;
+    justify-content: start;
+    width: fit-content;
+}
+
 #weather-data-container {
     display: grid;
     grid-column: 2 / 3;
     grid-template: 50px 50px 75px 150px 100px 1fr 1fr 1fr 1fr/ 1fr;
+    background-color: var(--primary-color);
+    border-radius: 10px;
 }
 
 #weather-data-container > *{
@@ -113,7 +119,7 @@ body {
 
 #country-city-name-container {
     padding-bottom: 15px;
-    font-size: 40px;
+    font-size: 34px;
     grid-row: 1 / 2;
     /* border: 1px solid red; */
 }
@@ -131,61 +137,86 @@ body {
 }
 
 #weather-condition-icon-temperature-container {
+    display: grid;
+    grid-template: 1fr / 4fr 2fr;
     grid-row: 4 / 5;
+    align-content: center;
+    gap: 20px;
 }
 
 #weather-condition-icon-img {
-    padding-left: 110px;
+    margin-left: 75px;
     height: 175px;
     width: 175px;
-    align-self: center;
+    grid-column: 1 / 2;
+    justify-self: end;
 }
 #feels-like-container {
+    margin-top: 20px;
     font-size: 20px;
     grid-row: 5 / 6;
+    align-items: start;
 }
 
 #current-temperature-container {
     font-size: 50px;
+    grid-column: 2 / 3;
+    justify-self: start;
 }
 
 #forecast-container {
     display: grid;
+    grid-template-rows: 50px 1fr;
     justify-self: center;
     grid-auto-flow: column;
     align-items: center;
     grid-column: repeat(autofill, minmax(100px, 1fr));
     grid-row: 6 / 7;
     grid-column: 1 / 4;
-    height: 250px;
+    height: fit-content;
     width: 98vw;
     /* border: 1px solid red; */
     overflow-x: auto;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+#forecast-container > * {
+    grid-row: 2 / 3;
+}
+
+#forecast-container > .category {
+    grid-row: 1 / 2;
+    grid-column: 1 / 3;
+    width: fit-content;
 }
 
 #secondary-weather-data-container {
     display: grid;
     grid-template: 50px 1fr 1fr 1fr / 1fr 1fr 1fr;
     grid-column: 3 / 4;
-    gap: 10px;
+    gap: 15px;
     justify-items: center;
     align-content: center;
+    background-color: var(--primary-color);
 }
-
-#secondary-weather-data-container .category {
-    grid-column: 1 / span 3;
-    width: inherit;
-}
-
 #secondary-weather-data-container > * {
     display: grid;
     grid-template: 2fr 1fr / 1fr;
     justify-items: center;
     /* border: 1px solid red; */
     border-radius: 10px;
-    height: 100px;
-    width: 130px;
+    height: 130px;
+    width: 150px;
 }
+
+#secondary-weather-data-container .category {
+    height: 30px;
+    grid-column: 1 / span 3;
+    width: inherit;
+    border-radius: 0px;
+}
+
 
 .hour-container {
     display: grid;
@@ -193,9 +224,18 @@ body {
     align-items: center;
     width: 122px;
     height: 200px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     border-radius: 10px;
     margin: 10px;
+}
+
+.category {
+    border-bottom: 1px solid black;
+    margin-left: 2vw;
+    height: fit-content;
+    font-size: 25px;
+    justify-self: start;
+    width: inherit;
 }
 
 .icon-container {
