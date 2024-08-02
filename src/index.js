@@ -1,341 +1,192 @@
-import './style.css'
+import './style.css';
 
-async function getCityWeatherData(cityName) {
-    const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=a390cc13883e4bfa92b23027242606&q=${cityName}&days=3`);
-    const cityWeatherData = await response.json();
-    setCityWeatherData(cityWeatherData);
-    console.log(cityWeatherData.location.country);
-    console.log(cityWeatherData.location.name);
-    console.log(cityWeatherData.location.localtime);
-    console.log(cityWeatherData.current.temp_f);
-    console.log(cityWeatherData.current.condition.text);
-    console.log(cityWeatherData.current.condition.icon); //use in img.src div
-    console.log(cityWeatherData.current.wind_dir);
-    console.log(cityWeatherData.current.wind_mph);
-    console.log(cityWeatherData.current.feelslike_f);
+class WeatherApp {
+    constructor() {
+        this.cityName = null;
+        this.apiKey = 'a390cc13883e4bfa92b23027242606';
 
-    cityWeatherData.forecast.forecastday.forEach(day => {
-        day.hour.forEach(hour => {
-            const will_it_rain = hour.will_it_rain;
-            const icon = hour.condition.icon;
-            const conditionText = hour.condition.text;
-            const temp_f = hour.temp_f;
-            const time = hour.time;
-            console.log(will_it_rain)
-            console.log(icon);
-            console.log(conditionText);
-            console.log(temp_f);
-            console.log(time);
-        })
-    })
+        this.getForecastButton = document.getElementById('get-forecast-button');
+        this.getForecastButton.addEventListener('click', () => this.handleGetForecastButtonClick());
+
+        this.getCityWeatherData('Louisville');
+    }
+
+    async getCityWeatherData(cityName) {
+        try {
+            const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${this.apiKey}&q=${cityName}&days=3`);
+            const cityWeatherData = await response.json();
+            this.setCityWeatherData(cityWeatherData);
+        } catch (error) {
+            console.error('Error fetching weather data:', error);
+        }
+    }
+
+    handleGetForecastButtonClick() {
+        const cityInput = document.getElementById('city-input');
+        this.cityName = cityInput.value;
+        this.getCityWeatherData(this.cityName);
+    }
+
+    setCityWeatherData(cityWeatherData) {
+        this.setCurrentWeather(cityWeatherData);
+        this.setForecastWeather(cityWeatherData);
+        this.setAdditionalWeatherData(cityWeatherData);
+    }
+
+    setCurrentWeather(cityWeatherData) {
+        const countryCityName = document.getElementById('country-city-name-container');
+        const localTime = document.getElementById('local-time-container');
+        const currentTemperature = document.getElementById('current-temperature-container');
+        const weatherCondition = document.getElementById('weather-condition-container');
+        const weatherConditionIcon = document.getElementById('weather-condition-icon-img');
+        const feelsLike = document.getElementById('feels-like-container');
+
+        countryCityName.textContent = `${cityWeatherData.location.name}, ${cityWeatherData.location.country}`;
+        localTime.textContent = cityWeatherData.location.localtime.slice(-5);
+        currentTemperature.textContent = `${cityWeatherData.current.temp_f}\u00B0`;
+        weatherCondition.textContent = cityWeatherData.current.condition.text;
+        weatherConditionIcon.src = this.getIconForCondition(cityWeatherData.current.condition.text);
+        feelsLike.textContent = `Feels like ${cityWeatherData.current.feelslike_f}\u00B0`;
+    }
+
+    setForecastWeather(cityWeatherData) {
+        const forecastContainer = document.getElementById('forecast-container');
+        forecastContainer.innerHTML = ''; // Clear previous data
+
+        cityWeatherData.forecast.forecastday.forEach(day => {
+            day.hour.forEach(hour => {
+                const hourContainer = document.createElement('div');
+                hourContainer.classList.add('hour-container');
+                forecastContainer.appendChild(hourContainer);
+
+                const timeContainer = document.createElement('div');
+                timeContainer.classList.add('time-container');
+                timeContainer.textContent = hour.time.substring(10);
+                hourContainer.appendChild(timeContainer);
+
+                const rainChanceContainer = document.createElement('div');
+                rainChanceContainer.textContent = `${hour.chance_of_rain}%`;
+                rainChanceContainer.style.color = 'blue';
+                hourContainer.appendChild(rainChanceContainer);
+
+                const iconContainer = document.createElement('img');
+                iconContainer.classList.add('icon-container');
+                iconContainer.src = this.getIconForCondition(hour.condition.text);
+                hourContainer.appendChild(iconContainer);
+
+                const tempContainer = document.createElement('div');
+                tempContainer.textContent = `${hour.temp_f}\u00B0`;
+                hourContainer.appendChild(tempContainer);
+            });
+        });
+
+        this.setThreeDayForecast(cityWeatherData);
+    }
+
+    setThreeDayForecast(cityWeatherData) {
+        const options = { weekday: 'long' };
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+
+        const dayContainers = [
+            document.getElementById('day-0'),
+            document.getElementById('day-1'),
+            document.getElementById('day-2')
+        ];
+
+        dayContainers.forEach((dayContainer, index) => {
+            dayContainer.innerHTML = ''; // Clear previous data
+
+            const img = document.createElement('img');
+            img.src = this.getIconForCondition(cityWeatherData.forecast.forecastday[index].day.condition.text);
+            dayContainer.appendChild(img);
+
+            const weekday = document.createElement('div');
+            weekday.textContent = index === 0 ? 'Today' : formatDate(cityWeatherData.forecast.forecastday[index].date);
+            dayContainer.appendChild(weekday);
+
+            const rainChance = document.createElement('div');
+            rainChance.textContent = `${cityWeatherData.forecast.forecastday[index].day.daily_chance_of_rain}%`;
+            dayContainer.appendChild(rainChance);
+
+            const highTemp = document.createElement('div');
+            highTemp.textContent = `H: ${cityWeatherData.forecast.forecastday[index].day.maxtemp_f}\u00B0`;
+            dayContainer.appendChild(highTemp);
+
+            const lowTemp = document.createElement('div');
+            lowTemp.textContent = `L: ${cityWeatherData.forecast.forecastday[index].day.mintemp_f}\u00B0`;
+            dayContainer.appendChild(lowTemp);
+        });
+    }
+
+    setAdditionalWeatherData(cityWeatherData) {
+        const sunriseContainer = document.getElementById('sunrise');
+        const sunsetContainer = document.getElementById('sundown');
+        const chanceOfRainContainer = document.getElementById('chance-of-rain');
+        const humidityContainer = document.getElementById('humidity');
+        const uvContainer = document.getElementById('uv-index');
+        const windContainer = document.getElementById('wind');
+        const visibilityContainer = document.getElementById('visibility');
+        const precipitationContainer = document.getElementById('precipitation');
+        const moonPhaseContainer = document.getElementById('moon-phase');
+
+        this.addTextToElement(sunriseContainer, cityWeatherData.forecast.forecastday[0].astro.sunrise);
+        this.addTextToElement(sunsetContainer, cityWeatherData.forecast.forecastday[0].astro.sunset);
+        this.addTextToElement(chanceOfRainContainer, `${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}%`);
+        this.addTextToElement(humidityContainer, `${cityWeatherData.current.humidity}%`);
+        this.addTextToElement(uvContainer, cityWeatherData.current.uv);
+        this.addTextToElement(windContainer, `${cityWeatherData.current.wind_mph} mph ${cityWeatherData.current.wind_dir}`);
+        this.addTextToElement(visibilityContainer, `${cityWeatherData.current.vis_miles} mi`);
+        this.addTextToElement(precipitationContainer, `${cityWeatherData.forecast.forecastday[0].day.totalprecip_in} in`);
+        this.addTextToElement(moonPhaseContainer, cityWeatherData.forecast.forecastday[0].astro.moon_phase);
+
+        this.addIconToElement(moonPhaseContainer, this.getMoonPhaseIcon(cityWeatherData.forecast.forecastday[0].astro.moon_phase));
+    }
+
+    addTextToElement(element, text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        element.appendChild(div);
+    }
+
+    addIconToElement(element, iconSrc) {
+        const img = document.createElement('img');
+        img.src = iconSrc;
+        element.appendChild(img);
+    }
+
+    getIconForCondition(conditionText) {
+        const iconMap = {
+            'Partly cloudy': './images/wi-day-cloudy.svg',
+            'Clear': './images/wi-day-sunny.svg',
+            'Overcast': './images/wi-cloudy.svg',
+            'Patchy rain possible': './images/wi-rain-mix.svg',
+            'Moderate rain': './images/wi-rain.svg',
+            'Sunny': './images/wi-day-sunny.svg'
+            // Add more mappings as needed
+        };
+        return iconMap[conditionText] || './images/wi-na.svg';
+    }
+
+    getMoonPhaseIcon(moonPhaseText) {
+        const moonPhaseMap = {
+            'New Moon': './images/wi-moon-new.svg',
+            'Waxing Crescent': './images/wi-moon-waxing-crescent-3.svg',
+            'First Quarter': './images/wi-moon-first-quarter.svg',
+            'Waxing Gibbous': './images/wi-moon-waxing-gibbous-3.svg',
+            'Full Moon': './images/wi-moon-full.svg',
+            'Waning Gibbous': './images/wi-moon-waning-gibbous-3.svg',
+            'Last Quarter': './images/wi-moon-third-quarter.svg',
+            'Waning Crescent': './images/wi-moon-waning-crescent-3.svg'
+            // Add more mappings as needed
+        };
+        return moonPhaseMap[moonPhaseText] || './images/wi-na.svg';
+    }
 }
 
-function setCityWeatherData(cityWeatherData) {
-    const countryCityName = document.getElementById('country-city-name-container');
-    const localTime = document.getElementById('local-time-container');
-    const currentTemperature = document.getElementById('current-temperature-container');
-    const weatherCondition = document.getElementById('weather-condition-container');
-    const weatherConditionIcon = document.getElementById('weather-condition-icon-img');
-    const windDirectionMPH = document.getElementById('wind-direction-mph-container');
-    const windMPH = document.getElementById('wind-mph-container');
-    const feelsLike = document.getElementById('feels-like-container');
-
-    countryCityName.textContent = `${cityWeatherData.location.name}, ${cityWeatherData.location.country}`;
-    currentTemperature.textContent = `${cityWeatherData.current.temp_f}\u00B0`;
-    
-    localTime.textContent = cityWeatherData.location.localtime.slice(-5);
-    weatherCondition.textContent = cityWeatherData.current.condition.text;
-    weatherConditionIcon.src = exchangeIconImage(weatherCondition.textContent); //cityWeatherData.current.condition.icon;
-    feelsLike.textContent = `Feels like ${cityWeatherData.current.feelslike_f}\u00B0`;
-
-    const forecastContainer = document.getElementById('forecast-container');
-
-    const sunriseContainer = document.getElementById('sunrise');
-    const sunsetContainer = document.getElementById('sundown');
-    const chanceOfRainContainer = document.getElementById('chance-of-rain');
-    const humidityContainer = document.getElementById('humidity');
-    const uvContainer = document.getElementById('uv-index');
-    const windContainer = document.getElementById('wind');
-    const visibilityContainer = document.getElementById('visibility');
-    const precipitationContainer = document.getElementById('precipitation');
-    const moonPhaseContainer = document.getElementById('moon-phase');
-
-    const sunriseText = document.createElement('p');
-    sunriseText.textContent = cityWeatherData.forecast.forecastday[0].astro.sunrise;
-    sunriseContainer.appendChild(sunriseText);
-
-    const sunsetText = document.createElement('p');
-    sunsetText.textContent = cityWeatherData.forecast.forecastday[0].astro.sunset;
-    sunsetContainer.appendChild(sunsetText);
-
-    const chanceOfRainText = document.createElement('p');
-    chanceOfRainText.textContent = `${cityWeatherData.forecast.forecastday[0].hour[0].chance_of_rain}%`; 
-    chanceOfRainContainer.appendChild(chanceOfRainText);
-
-    const humidityText = document.createElement('p');
-    humidityText.textContent = cityWeatherData.forecast.forecastday[0].hour[0].humidity;
-    humidityContainer.appendChild(humidityText);
-
-    const uvText = document.createElement('p');
-    uvText.textContent = cityWeatherData.current.uv;
-    uvContainer.appendChild(uvText);
-
-    const windText = document.createElement('p');
-    windText.textContent = `${cityWeatherData.current.wind_dir} ${cityWeatherData.current.wind_mph}`;
-    windContainer.appendChild(windText);
-
-    const visibilityText = document.createElement('p');
-    visibilityText.textContent = cityWeatherData.forecast.forecastday[0].day.avgvis_miles;
-    visibilityContainer.appendChild(visibilityText);
-
-    const precipitationText = document.createElement('p');
-    precipitationText.textContent = cityWeatherData.forecast.forecastday[0].day.totalprecip_in;
-    precipitationContainer.appendChild(precipitationText);
-
-    const moonPhaseText = document.createElement('p');
-    const moonPhaseIcon = document.createElement('img');
-    moonPhaseText.textContent = cityWeatherData.forecast.forecastday[0].astro.moon_phase;
-    moonPhaseIcon.style.height = '75px';
-    moonPhaseIcon.style.width = '75px';
-    moonPhaseIcon.src = moonPhase(moonPhaseText.textContent);
-    moonPhaseContainer.appendChild(moonPhaseIcon);
-    moonPhaseContainer.appendChild(moonPhaseText);
-
-    cityWeatherData.forecast.forecastday.forEach(day => {
-        day.hour.forEach(hour => {
-            const rainChance = hour.chance_of_rain;
-            const icon = hour.condition.icon;
-            const iconText = hour.condition.text;
-            const conditionText = hour.condition.text;
-            const temp_f = hour.temp_f;
-            const time = hour.time;
-
-            const hourContainer = document.createElement('div');
-            hourContainer.classList.add('hour-container');
-            forecastContainer.appendChild(hourContainer);
-            
-            const timeContainer = document.createElement('div');
-            timeContainer.classList.add('time-container');
-            timeContainer.textContent = time.substring(10);
-            hourContainer.appendChild(timeContainer);
-
-            const rainChanceContainer = document.createElement('div');
-            rainChanceContainer.textContent = `${rainChance}%`;
-            rainChanceContainer.style.color = 'blue';
-            hourContainer.appendChild(rainChanceContainer);
-
-            const iconContainer = document.createElement('img');
-            iconContainer.classList.add('icon-container');
-            iconContainer.src = exchangeIconImage(iconText);
-            hourContainer.appendChild(iconContainer);
-
-            const tempContainer = document.createElement('div');
-            tempContainer.textContent = `${temp_f}\u00B0`;
-            hourContainer.appendChild(tempContainer);
-
-            console.log(time);
-            console.log(rainChance)
-            console.log(icon);
-            console.log(conditionText);
-            console.log(temp_f);
-        })
-    })
-
-    const options = { weekday: 'long'};
-
-    function formatDate(dateStr) {
-        const date = new Date(dateStr);
-        return new Intl.DateTimeFormat('en-US', options).format(date);
-    }
-
-    const dayZero = document.getElementById('day-0');
-    const dayOne = document.getElementById('day-1');
-    const dayTwo = document.getElementById('day-2');
-
-    const imgZero = document.createElement('img');
-    imgZero.src = exchangeIconImage(cityWeatherData.current.condition.text);
-    dayZero.appendChild(imgZero);
-    const weekdayZero = document.createElement('div');
-    weekdayZero.textContent = 'Today';
-    dayZero.appendChild(weekdayZero);
-    const dayZeroRainChance = document.createElement('div');
-    dayZeroRainChance.textContent = `${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}%`;
-    dayZero.appendChild(dayZeroRainChance);
-    const dayZeroHigh = document.createElement('div');
-    dayZeroHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[0].day.maxtemp_f}\u00B0`;
-    dayZero.appendChild(dayZeroHigh);
-    const dayZeroLow = document.createElement('div');
-    dayZeroLow.textContent = `L: ${cityWeatherData.forecast.forecastday[0].day.mintemp_f}\u00B0`;
-    dayZero.appendChild(dayZeroLow);
-    
-    const imgOne = document.createElement('img');
-    imgOne.src = exchangeIconImage(cityWeatherData.forecast.forecastday[1].day.condition.text);
-    dayOne.appendChild(imgOne);
-    const weekdayOne = document.createElement('div');
-    weekdayOne.textContent = `${formatDate(cityWeatherData.forecast.forecastday[1].date)}`;
-    dayOne.appendChild(weekdayOne);
-    const dayOneRainChance = document.createElement('div');
-    dayOneRainChance.textContent = `${cityWeatherData.forecast.forecastday[1].day.daily_chance_of_rain}%`;
-    dayOne.appendChild(dayOneRainChance);
-    const dayOneHigh = document.createElement('div');
-    dayOneHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[1].day.maxtemp_f}\u00B0`;
-    dayOne.appendChild(dayOneHigh);
-    const dayOneLow = document.createElement('div');
-    dayOneLow.textContent = `L: ${cityWeatherData.forecast.forecastday[1].day.mintemp_f}\u00B0`;
-    dayOne.appendChild(dayOneLow);
-
-    const imgTwo = document.createElement('img');
-    imgTwo.src = exchangeIconImage(cityWeatherData.forecast.forecastday[2].day.condition.text);
-    dayTwo.appendChild(imgTwo);
-    const weekdayTwo = document.createElement('div');
-    weekdayTwo.textContent = formatDate(cityWeatherData.forecast.forecastday[2].date);
-    dayTwo.appendChild(weekdayTwo);
-    const dayTwoRainChance = document.createElement('div');
-    dayTwoRainChance.textContent = `${cityWeatherData.forecast.forecastday[2].day.daily_chance_of_rain}%`;
-    dayTwo.appendChild(dayTwoRainChance);
-    const dayTwoHigh = document.createElement('div');
-    dayTwoHigh.textContent = `H: ${cityWeatherData.forecast.forecastday[2].day.maxtemp_f}\u00B0`;
-    dayTwo.appendChild(dayTwoHigh);
-    const dayTwoLow = document.createElement('div');
-    dayTwoLow.textContent = `L: ${cityWeatherData.forecast.forecastday[2].day.mintemp_f}\u00B0`;
-    dayTwo.appendChild(dayTwoLow);
-}
-
-function exchangeIconImage(iconConditionText) {
-    switch(iconConditionText) {
-        case "Sunny":
-            return "./images/wi-day-sunny.svg";
-        case "Clear":
-            return "./images/wi-day-sunny.svg";
-        case "Clear ":
-            return "./images/wi-day-sunny.svg";
-        case "Partly cloudy":
-            return "./images/wi-cloudy.svg"
-        case "Partly Cloudy ":
-            return "./images/wi-cloudy.svg"
-        case "Cloudy":
-            return "./images/wi-cloudy.svg"
-        
-        case "Overcast":
-
-        case "Mist":
-            return "./images/wi-fog.svg"
-        case "Patchy rain possible":
-            return "./images/wi-day-rain.svg"
-        case "Patchy snow possible":
-            return "./images/wi-day-snow-wind.svg"
-        case "Patchy sleet possible":
-            return "./images/wi-day-rain-mix.svg"
-        case "Patchy freezing drizzle possible":
-            return "./images/wi-day-rain-mix.svg"
-        case "Thundery outbreaks possible":
-            return "./images/wi-day-lightning.svg"
-        case "Blowing snow":
-            return "./images/wi-day-snow.svg"
-        case "Blizzard": 
-            return "./images/wi-tornado.svg"
-        case "Fog":
-            return "./images/wi-fog.svg"
-        case "Freezing fog":
-            return "./images/wi-fog.svg"
-        case "Patchy light drizzle":
-            return "./images/wi-day-rain.svg"
-        case "Light drizzle":
-            return "./images/wi-day-rain.svg"
-        case "Freezing drizzle":
-            return "./images/wi-day-rain-mix.svg"
-        case "Heavy freezing drizzle":
-            return "./images/wi-day-rain-mix.svg"
-        case "Patchy light rain":
-            return "./images/wi-day-rain.svg"
-        case "Light rain":
-            return "./images/wi-day-rain.svg"
-        case "Moderate rain at times":
-            return "./images/wi-day-rain.svg"
-        case "Moderate rain":
-            return "./images/wi-day-rain.svg"
-        case "Heavy rain at times":
-            return "./images/wi-day-rain.svg"
-        case "Heavy rain":
-            return "./images/wi-day-rain.svg"
-        case "Light freezing rain":
-            return "./images/wi-day-rain-mix.svg"
-        case "Moderate or heavy freezing rain":
-            return "./images/wi-day-rain-mix.svg"
-        case "Light sleet":
-            return "./images/wi-day-rain-mix.svg"
-        case "Moderate or heavy sleet":
-            return "./images/wi-day-rain-mix.svg"
-        case "Patchy light snow":
-            return "./images/wi-day-snow.svg"
-        case "Light snow":
-            return "./images/wi-day-snow.svg"
-        case "Patchy moderate snow":
-            return "./images/wi-day-snow.svg"
-        case "Moderate snow":
-            return "./images/wi-day-snow.svg"
-        case "Patchy heavy snow":
-            return "./images/wi-day-snow.svg"
-        case "Heavy snow":
-            return "./images/wi-day-snow.svg"
-        case "Ice pellets":
-
-        case "Light rain shower":
-
-        case "Moderate or heavy rain shower":
-            return "./images/wi-day-rain.svg"
-        case "Torrential rain shower":
-            return "./images/wi-day-rain.svg"
-        case "Light sleet showers":
-            return "./images/wi-day-rain-mix.svg"
-        case "Moderate or heavy sleet showers":
-            return "./images/wi-day-rain-mix.svg"
-        case "Light snow showers":
-            return "./images/wi-day-snow.svg"
-        case "Moderate or heavy snow showers":
-            return "./images/wi-day-snow.svg"
-        case "Light showers of ice pellets":
-
-        case "Patchy light rain with thunder":
-            return "./images/wi-day-rain-mix.svg"
-        case "Moderate or heavy rain with thunder":
-
-        case "Patchy light snow with thunder":
-
-        case "Moderate or heavy snow with thunder":
-
-        default:
-    }
-};
-
-function moonPhase(moonPhaseText) {
-    switch(moonPhaseText) {
-        case "New Moon":
-            return './images/wi-moon-new.svg';
-        case "Waxing Crescent":
-            return './images/wi-moon-waxing-crescent-1.svg';
-        case "First Quarter":
-            return './images/wi-moon-first-quarter.svg';
-        case "Waxing Gibbous":
-            return './images/wi-moon-waxing-gibbous-1.svg';
-        case "Full Moon":
-            return './images/wi-moon-full.svg';
-        case "Waning Gibbous":
-            return './images/wi-moon-waning-gibbous-1.svg';
-        case "Last Quarter":
-            return './images/wi-moon-third-quarter.svg';
-        case "Waning Crescent":
-            return './images/wi-moon-waning-crescent-1.svg';
-    }
-};
-
-let cityName = null
-const getForecastButton = document.getElementById('get-forecast-button');
-
-// getForecastButton.addEventListener('click', () => {
-//     const cityInput = document.getElementById('city-input');
-//     cityName = cityInput.value
-//     getCityWeatherData(cityName);
-// });
-
-getCityWeatherData('Louisville');
+document.addEventListener('DOMContentLoaded', () => {
+    new WeatherApp();
+});
