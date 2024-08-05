@@ -3,10 +3,18 @@ import './style.css';
 class WeatherApp {
     constructor() {
         this.cityName = null;
+        this.celsius = false;
         this.apiKey = 'a390cc13883e4bfa92b23027242606';
+        this.cityWeatherData = null;
 
         this.getForecastButton = document.getElementById('get-forecast-button');
         this.getForecastButton.addEventListener('click', () => this.handleGetForecastButtonClick());
+
+        this.getTemperatureTypeChangeButton = document.getElementById('temperature-type-change-button');
+        this.getTemperatureTypeChangeButton.addEventListener('click', () => {
+            this.celsius = !this.celsius;
+            this.updateTemperatureDisplay(); // Update the display
+        });
 
         this.getCityWeatherData('Louisville');
     }
@@ -15,6 +23,7 @@ class WeatherApp {
         try {
             const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${this.apiKey}&q=${cityName}&days=3`);
             const cityWeatherData = await response.json();
+            this.cityWeatherData = cityWeatherData; // Store the data
             this.setCityWeatherData(cityWeatherData);
         } catch (error) {
             console.error('Error fetching weather data:', error);
@@ -43,15 +52,22 @@ class WeatherApp {
 
         countryCityName.textContent = `${cityWeatherData.location.name}, ${cityWeatherData.location.country}`;
         localTime.textContent = cityWeatherData.location.localtime.slice(-5);
-        currentTemperature.textContent = `${cityWeatherData.current.temp_f}\u00B0`;
+        
         weatherCondition.textContent = cityWeatherData.current.condition.text;
         weatherConditionIcon.src = this.getIconForCondition(cityWeatherData.current.condition.text);
-        feelsLike.textContent = `Feels like ${cityWeatherData.current.feelslike_f}\u00B0`;
+        if(this.celsius) {
+            currentTemperature.textContent = `${Math.round(cityWeatherData.current.temp_c)}\u00B0C`;
+            feelsLike.textContent = `Feels like ${Math.round(cityWeatherData.current.feelslike_c)}\u00B0C`;
+        }
+        else {
+            currentTemperature.textContent = `${Math.round(cityWeatherData.current.temp_f)}\u00B0F`;
+            feelsLike.textContent = `Feels like ${Math.round(cityWeatherData.current.feelslike_f)}\u00B0F`;
+        }
     }
 
     setForecastWeather(cityWeatherData) {
         const forecastContainer = document.getElementById('forecast-container');
-        forecastContainer.innerHTML = ''; // Clear previous data
+        forecastContainer.innerHTML = ''; // Clear previous forecast
 
         cityWeatherData.forecast.forecastday.forEach(day => {
             day.hour.forEach(hour => {
@@ -75,7 +91,13 @@ class WeatherApp {
                 hourContainer.appendChild(iconContainer);
 
                 const tempContainer = document.createElement('div');
-                tempContainer.textContent = `${hour.temp_f}\u00B0`;
+                tempContainer.classList.add('hourly-temp');
+                if(this.celsius) {
+                    tempContainer.textContent = `${Math.round(hour.temp_c)}\u00B0C`
+                }
+                else {
+                    tempContainer.textContent = `${Math.round(hour.temp_f)}\u00B0F`;
+                }
                 hourContainer.appendChild(tempContainer);
             });
         });
@@ -98,7 +120,7 @@ class WeatherApp {
         ];
 
         dayContainers.forEach((dayContainer, index) => {
-            dayContainer.innerHTML = ''; // Clear previous data
+            dayContainer.innerHTML = ''; // Clear previous forecast
 
             const img = document.createElement('img');
             img.src = this.getIconForCondition(cityWeatherData.forecast.forecastday[index].day.condition.text);
@@ -106,6 +128,7 @@ class WeatherApp {
 
             const weekday = document.createElement('div');
             weekday.textContent = index === 0 ? 'Today' : formatDate(cityWeatherData.forecast.forecastday[index].date);
+            weekday.style.fontWeight = 'bold';
             dayContainer.appendChild(weekday);
 
             const rainChance = document.createElement('div');
@@ -113,12 +136,21 @@ class WeatherApp {
             dayContainer.appendChild(rainChance);
 
             const highTemp = document.createElement('div');
-            highTemp.textContent = `H: ${cityWeatherData.forecast.forecastday[index].day.maxtemp_f}\u00B0`;
+            highTemp.classList.add('weekday-high-temp');
             dayContainer.appendChild(highTemp);
 
             const lowTemp = document.createElement('div');
-            lowTemp.textContent = `L: ${cityWeatherData.forecast.forecastday[index].day.mintemp_f}\u00B0`;
+            lowTemp.classList.add('weekday-low-temp');
             dayContainer.appendChild(lowTemp);
+
+            if(this.celsius) {
+                highTemp.textContent = `H: ${Math.round(cityWeatherData.forecast.forecastday[index].day.maxtemp_c)}\u00B0C`;
+                lowTemp.textContent = `L: ${Math.round(cityWeatherData.forecast.forecastday[index].day.mintemp_c)}\u00B0C`;
+            }
+            else {
+                highTemp.textContent = `H: ${Math.round(cityWeatherData.forecast.forecastday[index].day.maxtemp_f)}\u00B0F`;
+                lowTemp.textContent = `L: ${Math.round(cityWeatherData.forecast.forecastday[index].day.mintemp_f)}\u00B0F`;
+            }
         });
     }
 
@@ -144,6 +176,14 @@ class WeatherApp {
         this.addTextToElement(moonPhaseContainer, cityWeatherData.forecast.forecastday[0].astro.moon_phase);
 
         this.addIconToElement(moonPhaseContainer, this.getMoonPhaseIcon(cityWeatherData.forecast.forecastday[0].astro.moon_phase));
+    }
+
+    updateTemperatureDisplay() {
+        if (this.cityWeatherData) {
+            this.setCurrentWeather(this.cityWeatherData);
+            this.setForecastWeather(this.cityWeatherData);
+            this.setAdditionalWeatherData(this.cityWeatherData);
+        }
     }
 
     addTextToElement(element, text) {
