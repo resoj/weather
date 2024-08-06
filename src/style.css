@@ -1,10 +1,8 @@
 :root {
-    --text-color: #f4f3ee;
-    --primary-color: #BFD7EA;
-    --secondary-color: #D62839;
-    --darker-secondary-color: #BA324F;
-    --background-color: #0B3954;
-    --darker-background-color: #003049;
+    --text-color: #3a4750;
+    --primary-color: #be3144;;
+    --background-color: #d3d6db;
+    --darker-background-color: #303841;
 }
 
 * {
@@ -13,24 +11,23 @@
 }
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: var(--background-color)
+    background-color: var(--background-color);
 }
 
 #header-container {
-    padding: 50px 0px;
+    padding: 25px 0px;
     display: grid;
-    grid-template: 1fr / 500px 500px 1fr;
+    grid-template: 1fr / 1fr 1fr 2fr;
     justify-items: center;
-    gap: 10px;
-    font-size: 30px;
-    background-color: var(--secondary-color);
-    border-bottom: 1px solid var(--darker-secondary-color);
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    align-items: center;
+    background-color: var(--darker-background-color);
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
 }
 
 #title {
     grid-column: 1 / 2;
-    font-size: 50px;
+    font-size: 32px;
+    color: white;
 }
 
 #city-input-container {
@@ -40,49 +37,143 @@ body {
 }
 
 #city-input {
-    height: 50px;
-    width: 400px;
-    text-align: center;
+    max-height: 50px;
+    min-width: 475px;
+    padding-left: 10px;
     font-size: 15px;
-    border-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
     border: none;
-    background-color: lightgray;
+    background-color: var(--background-color);
     grid-row: 2 / 3;
     justify-self: end;
-    margin: 0px 5px;
 }
 
 #get-forecast-button {
-    height: 50px;
-    width: 100px;
+    font-size: 15px;
+    min-height: 50px;
+    min-width: 100px;
     grid-row: 2 / 3;
-    margin: 0px 5px;
+    background-color: var(--primary-color);
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    border: none;
+    color: white;
 }
 
 #temperature-type-change-button {
-    font-size: 16px;
+    padding: 8px;
+    font-size: 15px;
     grid-column: 3 / 4;
-    width: 175px;
+    min-width: 125px;
+    min-height: 45px;
     justify-self: end;
-    margin-right: 100px;
+    background-color: var(--background-color);
+    border: none;
+    border-radius: 6px;
+    margin-right: 150px;
 }
 
 #container {
     display: grid;
-    grid-template: 1fr / 1fr 1fr 1fr;
-    column-gap: 25px;
-    row-gap: 10px;
+    grid-template: 2fr 1fr 2fr/ 2fr 1fr;
+}
+
+
+#weather-data-container {
+    display: grid;
+    grid-column: 1 / 4;
+    grid-row: 1 / 2;
+    grid-template: 1fr 1fr 3fr 1fr 1fr/ 1fr 2fr;
+    align-items: center;
+    justify-items: center;
+    max-height: 500px;
+    padding: 25px 75px;
+}
+
+#weather-condition-icon-img {
+    height: 200px;
+    width: 200px;
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+}
+
+ #country-city-name-container {
+    font-size: 34px;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+ #weather-condition-container {
+    font-size: 28px;
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+}
+
+#current-temperature-container {
+    font-size: 50px;
+    grid-column: 1 / 2;
+    grid-row: 4 / 5;
+}
+
+#feels-like-container {
+    align-self: start;
+    grid-row: 5 / 6;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+#forecast-container {
+    display: grid;
+    justify-self: center;
+    grid-auto-flow: column;
+    align-items: center;
+    grid-column: repeat(autofill, minmax(100px, 1fr));
+    grid-row: 1 / 5;
+    grid-column: 2 / 4;
+    height: fit-content;
+    width: 90%;
+    overflow-x: auto;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+}
+
+#daily-summary {
+    justify-self: start;
+    grid-row: 5 / 6;
+    grid-column: 2 / 3;
+    font-size: 18px;
+}
+
+#secondary-weather-data-container {
+    display: grid;
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+    grid-column: 1 / 4;
+    grid-row: 2 / 3;
+    padding: 25px 0px;
+    justify-items: center;
+    align-content: center;
+    background-color: var(--darker-background-color);
+    max-height: 200px;
+}
+
+#secondary-weather-data-container > * {
+    display: grid;
+    grid-template: 1fr 1fr / 1fr;
+    justify-items: center;
+    border-radius: 10px;
+    color: white;
 }
 
 #weekly-forecast-container {
     display: grid;
     justify-items: center;
-    grid-template: 50px 1fr 1fr 1fr / 1fr;
-    grid-column: 1 / 2;
-    gap: 10px;
-    /* border: 1px solid red; */
-    background-color: var(--primary-color);
+    grid-template: 1fr 1fr 1fr 1fr / 1fr;
+    grid-column: 1 / 3;
+    grid-row: 3 / 4;
+    padding-right: 150px;
     border-radius: 10px;
+    max-height: 400px;
 }
 
 #weekly-forecast-container > * {
@@ -91,138 +182,22 @@ body {
     grid-template-columns: 1fr / 1fr 1fr 1fr 1fr 1fr;
     align-items: center;
     justify-items: center;
-    /* border: 1px solid red; */
-    border-radius: 10px;
-    width: 500px;
+    min-width: 600px;
+    border-bottom: 1px solid gray;
 }
 
-#weekly-forecast-container > .category {
-    grid-row: 1 / 2;
-    border-radius: 0px;
-    justify-content: start;
-    width: fit-content;
-}
-
-#weather-data-container {
+#weeklist {
     display: grid;
-    grid-column: 2 / 3;
-    grid-template: 50px 50px 75px 150px 100px 1fr 1fr 1fr 1fr/ 1fr;
-    background-color: var(--primary-color);
-    border-radius: 10px;
-}
-
-#weather-data-container > *{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#country-city-name-container {
-    padding-bottom: 15px;
-    font-size: 34px;
-    grid-row: 1 / 2;
-    /* border: 1px solid red; */
-}
-
-#local-time-container {
-    height: 45px;
-    font-size: 20px;
-    grid-row: 2 / 3;
-    /* border: 1px solid red; */
-}
-
-#weather-condition-container {
-    font-size: 35px;
-    grid-row: 3 / 4;
-}
-
-#weather-condition-icon-temperature-container {
-    display: grid;
-    grid-template: 1fr / 4fr 2fr;
-    grid-row: 4 / 5;
-    align-content: center;
-    gap: 20px;
-}
-
-#weather-condition-icon-img {
-    margin-left: 75px;
-    height: 175px;
-    width: 175px;
-    grid-column: 1 / 2;
-    justify-self: end;
-}
-#feels-like-container {
-    margin-top: 20px;
-    font-size: 20px;
-    grid-row: 5 / 6;
-    align-items: start;
-}
-
-#current-temperature-container {
-    font-size: 50px;
-    grid-column: 2 / 3;
-    justify-self: start;
-}
-
-#forecast-container {
-    display: grid;
-    grid-template-rows: 50px 1fr;
-    justify-self: center;
-    grid-auto-flow: column;
-    align-items: center;
-    grid-column: repeat(autofill, minmax(100px, 1fr));
-    grid-row: 6 / 7;
-    grid-column: 1 / 4;
-    height: fit-content;
-    width: 98vw;
-    /* border: 1px solid red; */
-    overflow-x: auto;
-    background-color: var(--primary-color);
-    border-radius: 10px;
-}
-
-#forecast-container > * {
-    grid-row: 2 / 3;
-}
-
-#forecast-container > .category {
-    grid-row: 1 / 2;
-    grid-column: 1 / 3;
-    width: fit-content;
-}
-
-#secondary-weather-data-container {
-    display: grid;
-    grid-template: 50px 1fr 1fr 1fr / 1fr 1fr 1fr;
-    grid-column: 3 / 4;
-    gap: 15px;
+    align-self: end;
     justify-items: center;
-    align-content: center;
-    background-color: var(--primary-color);
+    grid-template-columns: 1fr 1fr 1fr 1fr / 1fr;
 }
-#secondary-weather-data-container > * {
-    display: grid;
-    grid-template: 2fr 1fr / 1fr;
-    justify-items: center;
-    /* border: 1px solid red; */
-    border-radius: 10px;
-    height: 130px;
-    width: 150px;
-}
-
-#secondary-weather-data-container .category {
-    height: 30px;
-    grid-column: 1 / span 3;
-    width: inherit;
-    border-radius: 0px;
-}
-
 
 .hour-container {
     display: grid;
     justify-items: center;
     align-items: center;
-    width: 122px;
+    width: 125px;
     height: 200px;
     /* border: 1px solid black; */
     border-radius: 10px;
@@ -231,10 +206,10 @@ body {
 
 .category {
     border-bottom: 1px solid black;
-    margin-left: 2vw;
     height: fit-content;
     font-size: 25px;
     justify-self: start;
+    align-self: center;
     width: inherit;
 }
 
