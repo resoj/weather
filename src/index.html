@@ -7,60 +7,59 @@
 </head>
 <body>
     <div id="header-container">
-        <p id="title">weatherNow</p>
+        <p id="title">weatherNow!</p>
         <div id="city-input-container">
-            <input id="city-input" placeholder="Enter a City Name">
-            <button id="get-forecast-button">Get Forecast</button>
+            <input id="city-input" placeholder="Enter a City">
+            <button id="get-forecast-button">Search</button>
         </div>
-        <button id="temperature-type-change-button">C&deg / F&deg</button>
+        <button id="temperature-type-change-button">&degF / &degC</button>
     </div>
     <div id="container">
-        <div class="category">The next 3 days</div>
-        <div id="weekly-forecast-container">
-            <div id="day-0"></div>
-            <div id="day-1"></div>
-            <div id="day-2"></div>
-        </div>
-    <div id="weather-data-container">
+        <div id="weather-data-container">
             <div id="country-city-name-container"></div>
-            <div id="local-time-container"></div>
             <div id="weather-condition-container"></div>
-            <div id="weather-condition-icon-temperature-container">
-                <img id="weather-condition-icon-img">
-                <div id="current-temperature-container"></div>
-            </div>
+            <img id="weather-condition-icon-img">
+            <div id="current-temperature-container"></div>
+            <div id="local-time-container"></div>
             <div id="feels-like-container"></div>
+            <div id="forecast-container"></div>
+            <div id="daily-summary"></div>
         </div>
         <div id="secondary-weather-data-container">
-            <div class="category">More on today</div>
-            <div id="sunrise">Sunrise
-                <img src="./images/wi-sunrise.svg" height="75" width="75">
+            <div id="chance-of-rain">                     
+                <!-- <img src="./images/wi-rain.svg" height="75" width="75"> -->
             </div>
-            <div id="sundown">Sundown
-                <img src="./images/wi-sunset.svg" height="75" width="75">
+            <div id="sunrise">
+                <!-- <img src="./images/wi-sunrise.svg" height="75" width="75"> -->
             </div>
-            <div id="chance-of-rain">Chance of rain
-                <img src="./images/wi-rain.svg" height="75" width="75">
+            <div id="sundown">
+                <!-- <img src="./images/wi-sunset.svg" height="75" width="75"> -->
             </div>
-            <div id="humidity">Humidity
-                <img src="./images/wi-humidity.svg" height="75" width="75">
+            <div id="humidity">
+                <!-- <img src="./images/wi-humidity.svg" height="75" width="75"> -->
             </div>
-            <div id="uv-index">UV Index
-                <img src="./images/wi-thermometer.svg" height="75" width="75">
+            <div id="uv-index">
+                <!-- <img src="./images/wi-thermometer.svg" height="75" width="75"> -->
             </div>
-            <div id="wind">Wind Direction
-                <img src="./images/wi-cloudy-gusts.svg" height="75" width="75">
+            <div id="wind">
+                <!-- <img src="./images/wi-cloudy-gusts.svg" height="75" width="75"> -->
             </div>
-            <div id="visibility">Visibility
-                <img src="./images/wi-windy.svg" height="75" width="75">
+            <div id="visibility">
+                <!-- <img src="./images/wi-windy.svg" height="75" width="75"> -->
             </div>
-            <div id="precipitation">Precipitation
-                <img src="./images/wi-raindrops.svg" height="75" width="75">
+            <div id="precipitation">
+                <!-- <img src="./images/wi-raindrops.svg" height="75" width="75"> -->
             </div>
-            <div id="moon-phase">Moon Phase</div>
+            <div id="moon-phase"></div>
         </div>
-        <div class="category">Hourly forecast</div>
-        <div id="forecast-container">
+        <div id="weekly-forecast-container">
+            <div id="weeklist">
+                <div id="weekday">Weekday</div>
+                <div id="icon"></div>
+                <div id="rain-chance">Chance of rain</div>
+                <div id="low">Low</div>
+                <div id="high">High</div>
+            </div>
         </div>
     </div>
 </body>
