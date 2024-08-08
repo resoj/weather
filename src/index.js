@@ -10,10 +10,12 @@ class WeatherApp {
         this.getForecastButton = document.getElementById('get-forecast-button');
         this.getForecastButton.addEventListener('click', () => this.handleGetForecastButtonClick());
 
+        this.cityInput = document.getElementById('city-input');
+        this.cityInput.addEventListener('keyup', (e) => this.handleCityInputEnter(e));
+
         this.getTemperatureTypeChangeButton = document.getElementById('temperature-type-change-button');
         this.getTemperatureTypeChangeButton.addEventListener('click', () => {
-            this.celsius = !this.celsius;
-            this.updateTemperatureDisplay(); // Update the display
+            this.updateTemperatureDisplay();
         });
 
         this.getCityWeatherData('Louisville');
@@ -21,9 +23,9 @@ class WeatherApp {
 
     async getCityWeatherData(cityName) {
         try {
-            const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${this.apiKey}&q=${cityName}&days=3`);
+            const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${this.apiKey}&q=${cityName}&days=7`);
             const cityWeatherData = await response.json();
-            this.cityWeatherData = cityWeatherData; // Store the data
+            this.cityWeatherData = cityWeatherData;
             this.setCityWeatherData(cityWeatherData);
         } catch (error) {
             console.error('Error fetching weather data:', error);
@@ -36,6 +38,13 @@ class WeatherApp {
         this.getCityWeatherData(this.cityName);
     }
 
+    handleCityInputEnter(e) {
+        if(e.key === "Enter") {
+            const cityName = this.cityInput.value;
+            this.handleGetForecastButtonClick();
+        }
+    }
+
     setCityWeatherData(cityWeatherData) {
         this.setCurrentWeather(cityWeatherData);
         this.setForecastWeather(cityWeatherData);
@@ -44,116 +53,160 @@ class WeatherApp {
 
     setCurrentWeather(cityWeatherData) {
         const countryCityName = document.getElementById('country-city-name-container');
-        const localTime = document.getElementById('local-time-container');
         const currentTemperature = document.getElementById('current-temperature-container');
         const weatherCondition = document.getElementById('weather-condition-container');
         const weatherConditionIcon = document.getElementById('weather-condition-icon-img');
         const feelsLike = document.getElementById('feels-like-container');
+        const dailySummary = document.getElementById('daily-summary');
 
-        countryCityName.textContent = `${cityWeatherData.location.name}, ${cityWeatherData.location.country}`;
-        localTime.textContent = cityWeatherData.location.localtime.slice(-5);
+        countryCityName.textContent = `${cityWeatherData.location.name}`;
         
         weatherCondition.textContent = cityWeatherData.current.condition.text;
         weatherConditionIcon.src = this.getIconForCondition(cityWeatherData.current.condition.text);
         if(this.celsius) {
-            currentTemperature.textContent = `${Math.round(cityWeatherData.current.temp_c)}\u00B0C`;
-            feelsLike.textContent = `Feels like ${Math.round(cityWeatherData.current.feelslike_c)}\u00B0C`;
+            currentTemperature.textContent = `${Math.round(cityWeatherData.current.temp_c)}\u00B0`;
+            feelsLike.textContent = `Feels like ${Math.round(cityWeatherData.current.feelslike_c)}\u00B0`;
+            dailySummary.textContent = `${(cityWeatherData.current.condition.text)}; with a low of 
+            ${Math.round(cityWeatherData.forecast.forecastday[0].day.mintemp_c)}\u00B0 and a high of ${Math.round(cityWeatherData.forecast.forecastday[0].day.maxtemp_c)}\u00B0.There is a ${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}% chance of rain today.`;
         }
         else {
-            currentTemperature.textContent = `${Math.round(cityWeatherData.current.temp_f)}\u00B0F`;
-            feelsLike.textContent = `Feels like ${Math.round(cityWeatherData.current.feelslike_f)}\u00B0F`;
+            currentTemperature.textContent = `${Math.round(cityWeatherData.current.temp_f)}\u00B0`;
+            feelsLike.textContent = `Feels like ${Math.round(cityWeatherData.current.feelslike_f)}\u00B0`;
+            dailySummary.textContent = `${(cityWeatherData.current.condition.text)}; with a low of 
+            ${Math.round(cityWeatherData.forecast.forecastday[0].day.mintemp_f)}\u00B0 and a high of ${Math.round(cityWeatherData.forecast.forecastday[0].day.maxtemp_f)}\u00B0. There is a ${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}% chance of rain today.`;
         }
     }
 
-    setForecastWeather(cityWeatherData) {
+    updateTemperatureDisplay() {
+        if (this.cityWeatherData) {
+            this.clearCurrentWeather();
+            this.setCurrentWeather(this.cityWeatherData);
+            this.clearForecastWeather();
+            this.setForecastWeather(this.cityWeatherData);
+            this.clearWeeklyForecastWeather();
+            this.setThreeDayForecast(this.cityWeatherData);
+        }
+    }
+    
+    clearCurrentWeather() {
+        const currentTemperature = document.getElementById('current-temperature-container');
+        const feelsLike = document.getElementById('feels-like-container');
+        const dailySummary = document.getElementById('daily-summary');
+    
+        currentTemperature.textContent = '';
+        feelsLike.textContent = '';
+        dailySummary.textContent = '';
+    }
+    
+    clearForecastWeather() {
         const forecastContainer = document.getElementById('forecast-container');
-        forecastContainer.innerHTML = ''; // Clear previous forecast
+        forecastContainer.innerHTML = '';
+    }
 
+    clearWeeklyForecastWeather() {
+        const weeklyForecastContainer = document.getElementById('weekly-forecast-container');
+        while(weeklyForecastContainer.children.length > 1) {
+            weeklyForecastContainer.removeChild(weeklyForecastContainer.children[1]);
+        }
+    }
+
+    
+    setForecastWeather(cityWeatherData) {
+        this.clearForecastWeather();
+        const forecastContainer = document.getElementById('forecast-container');
+    
         cityWeatherData.forecast.forecastday.forEach(day => {
             day.hour.forEach(hour => {
                 const hourContainer = document.createElement('div');
                 hourContainer.classList.add('hour-container');
                 forecastContainer.appendChild(hourContainer);
-
+    
                 const timeContainer = document.createElement('div');
                 timeContainer.classList.add('time-container');
-                timeContainer.textContent = hour.time.substring(10);
+                const localTime = (cityWeatherData.location.localtime).substring(11, 13) + (hour.time).substring(11, 13);
+                const date = new Date(localTime);
+                timeContainer.textContent = date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    hour12: true
+                });
                 hourContainer.appendChild(timeContainer);
-
+    
                 const rainChanceContainer = document.createElement('div');
-                rainChanceContainer.textContent = `${hour.chance_of_rain}%`;
-                rainChanceContainer.style.color = 'blue';
+                if(hour.chance_of_rain !== 0) {
+                    rainChanceContainer.textContent = `${hour.chance_of_rain}%`;   
+                    rainChanceContainer.style.color = 'blue';
+                } else {
+                    rainChanceContainer.textContent = '';
+                }
                 hourContainer.appendChild(rainChanceContainer);
-
+    
                 const iconContainer = document.createElement('img');
                 iconContainer.classList.add('icon-container');
                 iconContainer.src = this.getIconForCondition(hour.condition.text);
                 hourContainer.appendChild(iconContainer);
-
+    
                 const tempContainer = document.createElement('div');
                 tempContainer.classList.add('hourly-temp');
-                if(this.celsius) {
-                    tempContainer.textContent = `${Math.round(hour.temp_c)}\u00B0C`
-                }
-                else {
-                    tempContainer.textContent = `${Math.round(hour.temp_f)}\u00B0F`;
+                if (this.celsius) {
+                    tempContainer.textContent = `${Math.round(hour.temp_c)}\u00B0`
+                } else {
+                    tempContainer.textContent = `${Math.round(hour.temp_f)}\u00B0`;
                 }
                 hourContainer.appendChild(tempContainer);
             });
         });
-
+    
         this.setThreeDayForecast(cityWeatherData);
     }
-
+    
+    
     setThreeDayForecast(cityWeatherData) {
+        this.clearWeeklyForecastWeather();
         const options = { weekday: 'long' };
-
+    
         function formatDate(dateStr) {
             const date = new Date(dateStr);
             return new Intl.DateTimeFormat('en-US', options).format(date);
         }
-
-        const dayContainers = [
-            document.getElementById('day-0'),
-            document.getElementById('day-1'),
-            document.getElementById('day-2')
-        ];
-
-        dayContainers.forEach((dayContainer, index) => {
-            dayContainer.innerHTML = ''; // Clear previous forecast
-
-            const img = document.createElement('img');
-            img.src = this.getIconForCondition(cityWeatherData.forecast.forecastday[index].day.condition.text);
-            dayContainer.appendChild(img);
-
+    
+        const weeklyForecastContainer = document.getElementById('weekly-forecast-container');
+    
+        for (let i = 0; i < 3; i++) {
+            const weekdayContainer = document.createElement('div');
+            weekdayContainer.innerHTML = '';
+            weeklyForecastContainer.appendChild(weekdayContainer);
+    
             const weekday = document.createElement('div');
-            weekday.textContent = index === 0 ? 'Today' : formatDate(cityWeatherData.forecast.forecastday[index].date);
-            weekday.style.fontWeight = 'bold';
-            dayContainer.appendChild(weekday);
-
+            weekday.textContent = i === 0 ? 'Today' : formatDate(cityWeatherData.forecast.forecastday[i].date);
+            weekdayContainer.appendChild(weekday);
+    
+            const img = document.createElement('img');
+            img.src = this.getIconForCondition(cityWeatherData.forecast.forecastday[i].day.condition.text);
+            img.classList.add('icon-container');
+            weekdayContainer.appendChild(img);
+    
             const rainChance = document.createElement('div');
-            rainChance.textContent = `${cityWeatherData.forecast.forecastday[index].day.daily_chance_of_rain}%`;
-            dayContainer.appendChild(rainChance);
-
-            const highTemp = document.createElement('div');
-            highTemp.classList.add('weekday-high-temp');
-            dayContainer.appendChild(highTemp);
-
+            rainChance.textContent = `${cityWeatherData.forecast.forecastday[i].day.daily_chance_of_rain}%`;
+            weekdayContainer.appendChild(rainChance);
+    
             const lowTemp = document.createElement('div');
             lowTemp.classList.add('weekday-low-temp');
-            dayContainer.appendChild(lowTemp);
-
-            if(this.celsius) {
-                highTemp.textContent = `H: ${Math.round(cityWeatherData.forecast.forecastday[index].day.maxtemp_c)}\u00B0C`;
-                lowTemp.textContent = `L: ${Math.round(cityWeatherData.forecast.forecastday[index].day.mintemp_c)}\u00B0C`;
+            weekdayContainer.appendChild(lowTemp);
+    
+            const highTemp = document.createElement('div');
+            highTemp.classList.add('weekday-high-temp');
+            weekdayContainer.appendChild(highTemp);
+    
+            if (this.celsius) {
+                highTemp.textContent = `${Math.round(cityWeatherData.forecast.forecastday[i].day.maxtemp_c)}\u00B0`;
+                lowTemp.textContent = `${Math.round(cityWeatherData.forecast.forecastday[i].day.mintemp_c)}\u00B0`;
+            } else {
+                highTemp.textContent = `${Math.round(cityWeatherData.forecast.forecastday[i].day.maxtemp_f)}\u00B0`;
+                lowTemp.textContent = `${Math.round(cityWeatherData.forecast.forecastday[i].day.mintemp_f)}\u00B0`;
             }
-            else {
-                highTemp.textContent = `H: ${Math.round(cityWeatherData.forecast.forecastday[index].day.maxtemp_f)}\u00B0F`;
-                lowTemp.textContent = `L: ${Math.round(cityWeatherData.forecast.forecastday[index].day.mintemp_f)}\u00B0F`;
-            }
-        });
+        }
     }
-
+    
     setAdditionalWeatherData(cityWeatherData) {
         const sunriseContainer = document.getElementById('sunrise');
         const sunsetContainer = document.getElementById('sundown');
@@ -165,6 +218,16 @@ class WeatherApp {
         const precipitationContainer = document.getElementById('precipitation');
         const moonPhaseContainer = document.getElementById('moon-phase');
 
+        sunriseContainer.textContent = 'Sunrise';
+        sunsetContainer.textContent = 'Sunset';
+        chanceOfRainContainer.textContent = 'Chance of rain';
+        humidityContainer.textContent = 'Humidity';
+        uvContainer.textContent = 'UV Index';
+        windContainer.textContent = 'Wind';
+        visibilityContainer.textContent = 'Visibility';
+        precipitationContainer.textContent = 'Precipitation';
+        moonPhaseContainer.textContent = 'Moon Phase';
+    
         this.addTextToElement(sunriseContainer, cityWeatherData.forecast.forecastday[0].astro.sunrise);
         this.addTextToElement(sunsetContainer, cityWeatherData.forecast.forecastday[0].astro.sunset);
         this.addTextToElement(chanceOfRainContainer, `${cityWeatherData.forecast.forecastday[0].day.daily_chance_of_rain}%`);
@@ -172,58 +235,139 @@ class WeatherApp {
         this.addTextToElement(uvContainer, cityWeatherData.current.uv);
         this.addTextToElement(windContainer, `${cityWeatherData.current.wind_mph} mph ${cityWeatherData.current.wind_dir}`);
         this.addTextToElement(visibilityContainer, `${cityWeatherData.current.vis_miles} mi`);
-        this.addTextToElement(precipitationContainer, `${cityWeatherData.forecast.forecastday[0].day.totalprecip_in} in`);
+        this.addTextToElement(precipitationContainer, `${cityWeatherData.forecast.forecastday[0].day.totalprecip_in}%`);
         this.addTextToElement(moonPhaseContainer, cityWeatherData.forecast.forecastday[0].astro.moon_phase);
-
-        this.addIconToElement(moonPhaseContainer, this.getMoonPhaseIcon(cityWeatherData.forecast.forecastday[0].astro.moon_phase));
     }
-
-    updateTemperatureDisplay() {
-        if (this.cityWeatherData) {
-            this.setCurrentWeather(this.cityWeatherData);
-            this.setForecastWeather(this.cityWeatherData);
-            this.setAdditionalWeatherData(this.cityWeatherData);
-        }
-    }
+    
 
     addTextToElement(element, text) {
         const div = document.createElement('div');
         div.textContent = text;
+        div.style.color = 'white';
         element.appendChild(div);
     }
 
     addIconToElement(element, iconSrc) {
         const img = document.createElement('img');
         img.src = iconSrc;
+        importScripts.classList.add('icon-container');
         element.appendChild(img);
     }
 
     getIconForCondition(conditionText) {
-        const iconMap = {
-            'Partly cloudy': './images/wi-day-cloudy.svg',
-            'Clear': './images/wi-day-sunny.svg',
-            'Overcast': './images/wi-cloudy.svg',
-            'Patchy rain possible': './images/wi-rain-mix.svg',
-            'Moderate rain': './images/wi-rain.svg',
-            'Sunny': './images/wi-day-sunny.svg'
-            // Add more mappings as needed
-        };
-        return iconMap[conditionText] || './images/wi-na.svg';
-    }
-
-    getMoonPhaseIcon(moonPhaseText) {
-        const moonPhaseMap = {
-            'New Moon': './images/wi-moon-new.svg',
-            'Waxing Crescent': './images/wi-moon-waxing-crescent-3.svg',
-            'First Quarter': './images/wi-moon-first-quarter.svg',
-            'Waxing Gibbous': './images/wi-moon-waxing-gibbous-3.svg',
-            'Full Moon': './images/wi-moon-full.svg',
-            'Waning Gibbous': './images/wi-moon-waning-gibbous-3.svg',
-            'Last Quarter': './images/wi-moon-third-quarter.svg',
-            'Waning Crescent': './images/wi-moon-waning-crescent-3.svg'
-            // Add more mappings as needed
-        };
-        return moonPhaseMap[moonPhaseText] || './images/wi-na.svg';
+        switch(conditionText) {
+            case "Sunny":
+                return "./images/wi-day-sunny.svg";
+            case "Clear":
+                return "./images/wi-day-sunny.svg";
+            case "Clear ":
+                return "./images/wi-day-sunny.svg";
+            case "Partly cloudy":
+                return "./images/wi-cloudy.svg"
+            case "Partly Cloudy ":
+                return "./images/wi-cloudy.svg"
+            case "Partly Cloudy":
+                return "./images/wi-cloudy.svg"
+            case "Cloudy":
+                return "./images/wi-cloudy.svg"
+            case "Cloudy ":
+                return "./images/wi-cloudy.svg"
+            case "Overcast":
+                return "./images/wi-cloudy.svg"
+            case "Overcast ":
+                return "./images/wi-cloudy.svg"
+            case "Mist":
+                return "./images/wi-fog.svg"
+            case "Patchy rain possible":
+                return "./images/wi-rain.svg"
+            case "Patchy snow possible":
+                return "./images/wi-rain-mix.svg"
+            case "Patchy sleet possible":
+                return "./images/wi-rain-mix.svg"
+            case "Patchy freezing drizzle possible":
+                return "./images/wi-rain-mix.svg"
+            case "Thundery outbreaks possible":
+                return "./images/wi-storm-showers.svg"
+            case "Blowing snow":
+                return "./images/wi-snow.svg"
+            case "Blizzard": 
+                return "./images/wi-tornado.svg"
+            case "Fog":
+                return "./images/wi-fog.svg"
+            case "Freezing fog":
+                return "./images/wi-fog.svg"
+            case "Patchy light drizzle":
+                return "./images/wi-rain.svg"
+            case "Light drizzle":
+                return "./images/wi-rain.svg"
+            case "Freezing drizzle":
+                return "./images/wi-rain-mix.svg"
+            case "Heavy freezing drizzle":
+                return "./images/wi-rain-mix.svg"
+            case "Patchy light rain":
+                return "./images/wi-rain.svg"
+            case "Light rain":
+                return "./images/wi-rain.svg"
+            case "Moderate rain at times":
+                return "./images/wi-rain.svg"
+            case "Moderate rain":
+                return "./images/wi-rain.svg"
+            case "Heavy rain at times":
+                return "./images/wi-rain.svg"
+            case "Heavy rain":
+                return "./images/wi-rain.svg"
+            case "Light freezing rain":
+                return "./images/wi-rain-mix.svg"
+            case "Moderate or heavy freezing rain":
+                return "./images/wi-rain-mix.svg"
+            case "Light sleet":
+                return "./images/wi-rain-mix.svg"
+            case "Moderate or heavy sleet":
+                return "./images/wi-rain-mix.svg"
+            case "Patchy light snow":
+                return "./images/wi-snow.svg"
+            case "Light snow":
+                return "./images/wi-snow.svg"
+            case "Patchy moderate snow":
+                return "./images/wi-snow.svg"
+            case "Moderate snow":
+                return "./images/wi-snow.svg"
+            case "Patchy heavy snow":
+                return "./images/wi-snow.svg"
+            case "Heavy snow":
+                return "./images/wi-snow.svg"
+            case "Ice pellets":
+                return "./images/wi-snow.svg"
+            case "Light rain shower":
+                return "./images/wi-rain-mix.svg"
+            case "Moderate or heavy rain shower":
+                return "./images/wi-rain.svg"
+            case "Torrential rain shower":
+                return "./images/wi-rain.svg"
+            case "Light sleet showers":
+                return "./images/wi-rain-mix.svg"
+            case "Moderate or heavy sleet showers":
+                return "./images/wi-rain-mix.svg"
+            case "Light snow showers":
+                return "./images/wi-snow.svg"
+            case "Moderate or heavy snow showers":
+                return "./images/wi-snow.svg"
+            case "Light showers of ice pellets":
+                return "./images/wi-rain.svg"
+            case "Patchy light rain with thunder":
+                return "./images/wi-storm-showers.svg"
+            case "Patchy light rain in area with thunder":
+                return "./images/wi-storm-showers.svg"
+            case "Patchy rain nearby":
+                return "./images/wi-rain.svg"
+            case "Moderate or heavy rain with thunder":
+                return "./images/wi-storm-showers.svg"
+            case "Patchy light snow with thunder":
+                return "./images/wi-storm-showers.svg"
+            case "Moderate or heavy snow with thunder":
+                return "./images/wi-storm-showers.svg"
+        }
+        return conditionText;
     }
 }
 
