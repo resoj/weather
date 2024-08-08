@@ -244,6 +244,7 @@ class WeatherApp {
         const div = document.createElement('div');
         div.textContent = text;
         div.style.color = 'white';
+        div.style.fontWeight = 'lighter';
         element.appendChild(div);
     }
 
