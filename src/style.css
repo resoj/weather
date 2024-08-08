@@ -50,6 +50,10 @@ body {
     justify-self: end;
 }
 
+#city-input:focus {
+    outline: none;
+}
+
 #get-forecast-button {
     font-size: 15px;
     min-height: 50px;
