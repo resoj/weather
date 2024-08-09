@@ -15,6 +15,7 @@ class WeatherApp {
 
         this.getTemperatureTypeChangeButton = document.getElementById('temperature-type-change-button');
         this.getTemperatureTypeChangeButton.addEventListener('click', () => {
+            this.celsius = !this.celsius
             this.updateTemperatureDisplay();
         });
 

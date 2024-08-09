@@ -186,15 +186,20 @@ body {
     grid-auto-flow: column;
     grid-template-columns: 1fr / 1fr 1fr 1fr 1fr 1fr;
     align-items: center;
-    justify-items: center;
+    justify-items: start;
     min-width: 50vw;
     border-bottom: 1px solid gray;
 }
 
+#weekly-forecast-container > * > * {
+    min-width: 100px;
+}
+
+
 #weeklist {
     display: grid;
     align-self: end;
-    justify-items: center;
+    justify-items: start;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr/ 1fr;
 }
 
