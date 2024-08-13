@@ -15,7 +15,15 @@ class WeatherApp {
 
         this.getTemperatureTypeChangeButton = document.getElementById('temperature-type-change-button');
         this.getTemperatureTypeChangeButton.addEventListener('click', () => {
-            this.celsius = !this.celsius
+            const temperatureTypeChangeButton = document.getElementById('temperature-type-change-button');
+            this.celsius = !this.celsius;
+            
+            if (this.celsius) {
+                temperatureTypeChangeButton.innerHTML = 'F&deg; / <strong>&deg;C</strong>';
+            } else {
+                temperatureTypeChangeButton.innerHTML = '<strong>F&deg;</strong> / &deg;C';
+            }
+            
             this.updateTemperatureDisplay();
         });
 
@@ -118,10 +126,8 @@ class WeatherApp {
         this.clearForecastWeather();
         const forecastContainer = document.getElementById('forecast-container');
     
-        // Extract the local hour from the localtime
         const localHour = parseInt(cityWeatherData.location.localtime.slice(11, 13), 10);
     
-        // Limit the forecast to the next 12 hours
         const forecastHours = cityWeatherData.forecast.forecastday.flatMap(day => day.hour).slice(0, 12);
     
         forecastHours.forEach((hour, index) => {
@@ -132,18 +138,15 @@ class WeatherApp {
             const timeContainer = document.createElement('div');
             timeContainer.classList.add('time-container');
     
-            // Calculate the forecast hour
             let forecastHour = (localHour + index) % 24;
     
-            // Determine AM or PM
             const isPM = forecastHour >= 12;
             if (forecastHour > 12) {
                 forecastHour -= 12;
             } else if (forecastHour === 0) {
-                forecastHour = 12; // Handle midnight hour
+                forecastHour = 12; 
             }
     
-            // Display formatted time with AM/PM
             timeContainer.textContent = `${forecastHour} ${isPM ? 'PM' : 'AM'}`;
             hourContainer.appendChild(timeContainer);
     
