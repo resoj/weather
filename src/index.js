@@ -118,59 +118,61 @@ class WeatherApp {
         this.clearForecastWeather();
         const forecastContainer = document.getElementById('forecast-container');
     
-        // Get the time zone offset from the cityWeatherData (assuming the API provides it)
-        const timeZone = cityWeatherData.location.tz_id; // Adjust this if the field name is different
+        // Extract the local hour from the localtime
+        const localHour = parseInt(cityWeatherData.location.localtime.slice(11, 13), 10);
     
-        cityWeatherData.forecast.forecastday.forEach(day => {
-            day.hour.forEach(hour => {
-                const hourContainer = document.createElement('div');
-                hourContainer.classList.add('hour-container');
-                forecastContainer.appendChild(hourContainer);
+        // Limit the forecast to the next 12 hours
+        const forecastHours = cityWeatherData.forecast.forecastday.flatMap(day => day.hour).slice(0, 12);
     
-                const timeContainer = document.createElement('div');
-                timeContainer.classList.add('time-container');
+        forecastHours.forEach((hour, index) => {
+            const hourContainer = document.createElement('div');
+            hourContainer.classList.add('hour-container');
+            forecastContainer.appendChild(hourContainer);
     
-                // Parse the API time as UTC
-                const forecastTimeUTC = new Date(hour.time);
+            const timeContainer = document.createElement('div');
+            timeContainer.classList.add('time-container');
     
-                // Convert UTC time to local time for the city's time zone
-                const localDate = new Date(forecastTimeUTC.toLocaleString('en-US', { timeZone: timeZone }));
+            // Calculate the forecast hour
+            let forecastHour = (localHour + index) % 24;
     
-                timeContainer.textContent = localDate.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: 'numeric',
-                    hour12: true
-                });
-                hourContainer.appendChild(timeContainer);
+            // Determine AM or PM
+            const isPM = forecastHour >= 12;
+            if (forecastHour > 12) {
+                forecastHour -= 12;
+            } else if (forecastHour === 0) {
+                forecastHour = 12; // Handle midnight hour
+            }
     
-                const rainChanceContainer = document.createElement('div');
-                if (hour.chance_of_rain !== 0) {
-                    rainChanceContainer.textContent = `${hour.chance_of_rain}%`;
-                    rainChanceContainer.style.color = 'blue';
-                } else {
-                    rainChanceContainer.textContent = '';
-                }
-                hourContainer.appendChild(rainChanceContainer);
+            // Display formatted time with AM/PM
+            timeContainer.textContent = `${forecastHour} ${isPM ? 'PM' : 'AM'}`;
+            hourContainer.appendChild(timeContainer);
     
-                const iconContainer = document.createElement('img');
-                iconContainer.classList.add('icon-container');
-                iconContainer.src = this.getIconForCondition(hour.condition.text);
-                hourContainer.appendChild(iconContainer);
+            const rainChanceContainer = document.createElement('div');
+            if (hour.chance_of_rain !== 0) {
+                rainChanceContainer.textContent = `${hour.chance_of_rain}%`;
+                rainChanceContainer.style.color = 'blue';
+            } else {
+                rainChanceContainer.textContent = '';
+            }
+            hourContainer.appendChild(rainChanceContainer);
     
-                const tempContainer = document.createElement('div');
-                tempContainer.classList.add('hourly-temp');
-                if (this.celsius) {
-                    tempContainer.textContent = `${Math.round(hour.temp_c)}\u00B0`;
-                } else {
-                    tempContainer.textContent = `${Math.round(hour.temp_f)}\u00B0`;
-                }
-                hourContainer.appendChild(tempContainer);
-            });
+            const iconContainer = document.createElement('img');
+            iconContainer.classList.add('icon-container');
+            iconContainer.src = this.getIconForCondition(hour.condition.text);
+            hourContainer.appendChild(iconContainer);
+    
+            const tempContainer = document.createElement('div');
+            tempContainer.classList.add('hourly-temp');
+            if (this.celsius) {
+                tempContainer.textContent = `${Math.round(hour.temp_c)}\u00B0`;
+            } else {
+                tempContainer.textContent = `${Math.round(hour.temp_f)}\u00B0`;
+            }
+            hourContainer.appendChild(tempContainer);
         });
     
         this.setThreeDayForecast(cityWeatherData);
     }
-    
     
     setThreeDayForecast(cityWeatherData) {
         this.clearWeeklyForecastWeather();
