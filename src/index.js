@@ -19,11 +19,11 @@ class WeatherApp {
             this.celsius = !this.celsius;
             
             if (this.celsius) {
-                temperatureTypeChangeButton.innerHTML = 'F&deg; / <strong>&deg;C</strong>';
+                temperatureTypeChangeButton.innerHTML = 'F&deg; / <strong>C&deg</strong>';
             } else {
-                temperatureTypeChangeButton.innerHTML = '<strong>F&deg;</strong> / &deg;C';
+                temperatureTypeChangeButton.innerHTML = '<strong>F&deg;</strong> / C&deg';
             }
-            
+
             this.updateTemperatureDisplay();
         });
 
@@ -43,7 +43,7 @@ class WeatherApp {
 
     handleGetForecastButtonClick() {
         const cityInput = document.getElementById('city-input');
-        this.cityName = cityInput.value.trim(); // Trim whitespace
+        this.cityName = cityInput.value.trim();
         if (this.cityName) {
             this.getCityWeatherData(this.cityName);
         }
