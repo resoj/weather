@@ -24,7 +24,7 @@ class WeatherApp {
 
     async getCityWeatherData(cityName) {
         try {
-            const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${this.apiKey}&q=${cityName}&days=7`);
+            const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${this.apiKey}&q=${cityName}&days=7`);
             const cityWeatherData = await response.json();
             this.cityWeatherData = cityWeatherData;
             this.setCityWeatherData(cityWeatherData);
