@@ -35,8 +35,10 @@ class WeatherApp {
 
     handleGetForecastButtonClick() {
         const cityInput = document.getElementById('city-input');
-        this.cityName = cityInput.value;
-        this.getCityWeatherData(this.cityName);
+        this.cityName = cityInput.value.trim(); // Trim whitespace
+        if (this.cityName) {
+            this.getCityWeatherData(this.cityName);
+        }
     }
 
     handleCityInputEnter(e) {
@@ -116,6 +118,9 @@ class WeatherApp {
         this.clearForecastWeather();
         const forecastContainer = document.getElementById('forecast-container');
     
+        // Get the time zone offset from the cityWeatherData (assuming the API provides it)
+        const timeZone = cityWeatherData.location.tz_id; // Adjust this if the field name is different
+    
         cityWeatherData.forecast.forecastday.forEach(day => {
             day.hour.forEach(hour => {
                 const hourContainer = document.createElement('div');
@@ -124,17 +129,23 @@ class WeatherApp {
     
                 const timeContainer = document.createElement('div');
                 timeContainer.classList.add('time-container');
-                const localTime = (cityWeatherData.location.localtime).substring(11, 13) + (hour.time).substring(11, 13);
-                const date = new Date(localTime);
-                timeContainer.textContent = date.toLocaleTimeString('en-US', {
+    
+                // Parse the API time as UTC
+                const forecastTimeUTC = new Date(hour.time);
+    
+                // Convert UTC time to local time for the city's time zone
+                const localDate = new Date(forecastTimeUTC.toLocaleString('en-US', { timeZone: timeZone }));
+    
+                timeContainer.textContent = localDate.toLocaleTimeString('en-US', {
                     hour: 'numeric',
+                    minute: 'numeric',
                     hour12: true
                 });
                 hourContainer.appendChild(timeContainer);
     
                 const rainChanceContainer = document.createElement('div');
-                if(hour.chance_of_rain !== 0) {
-                    rainChanceContainer.textContent = `${hour.chance_of_rain}%`;   
+                if (hour.chance_of_rain !== 0) {
+                    rainChanceContainer.textContent = `${hour.chance_of_rain}%`;
                     rainChanceContainer.style.color = 'blue';
                 } else {
                     rainChanceContainer.textContent = '';
@@ -149,7 +160,7 @@ class WeatherApp {
                 const tempContainer = document.createElement('div');
                 tempContainer.classList.add('hourly-temp');
                 if (this.celsius) {
-                    tempContainer.textContent = `${Math.round(hour.temp_c)}\u00B0`
+                    tempContainer.textContent = `${Math.round(hour.temp_c)}\u00B0`;
                 } else {
                     tempContainer.textContent = `${Math.round(hour.temp_f)}\u00B0`;
                 }
@@ -188,6 +199,7 @@ class WeatherApp {
     
             const rainChance = document.createElement('div');
             rainChance.textContent = `${cityWeatherData.forecast.forecastday[i].day.daily_chance_of_rain}%`;
+            rainChance.style.color = 'blue';
             weekdayContainer.appendChild(rainChance);
     
             const lowTemp = document.createElement('div');
